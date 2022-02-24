@@ -20,7 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+
+import os
+from ._utils import force_mkdir, force_symlink
 from ._config import ConfigBase, Param
+from ._errors import ArgumentError
+from ._download import do_fetch
 
 
 class WindowsDownloader:
@@ -60,15 +65,10 @@ class WindowsDownloader:
 
         return ret
 
-    def __init__(self, cfg=None, param=None):
-        if cfg is not None:
-            assert isinstance(cfg, ConfigBase)
-            self._cfg = cfg
-        else:
-            self._cfg = EtcDirConfig()
-
-        assert isinstance(param, Param)
-        assert param.check()
+    def __init__(self, cfg, param):
+        assert isinstance(cfg, ConfigBase)
+        assert isinstance(param, Param) and param.check()
+        self._cfg = cfg
         self._param = param
 
     def download(self, product_id_list, dest_dir):
@@ -88,27 +88,34 @@ class WindowsDownloader:
     def _download(self, product_id, dest_dir):
         if product_id == "windows-7-home-premium.x86.en_us":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            # this is an easy one
             url = "https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-us.iso"
-            # FIXME: wget
+            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            return
 
         if product_id == "windows-7-home-premium.x86_64.en_us":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            # this is an easy one
             url = "https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-us.iso"
-            # FIXME: wget
+            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            return
 
         if product_id == "windows-7-ultimate.x86.en_us":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            # this is an easy one
             url = "https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-us.iso"
-            # FIXME: wget
+            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            return
 
         if product_id == "windows-7-ultimate.x86_64.en_us":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            # this is an easy one
             url = "https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-us.iso"
-            # FIXME: wget
+            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            return
+
+    def __fetch_install_iso_file_simple(self, product_id, url, dest_dir):
+        fullfn = os.path.join(dest_dir, os.path.basename(url))
+        do_fetch(self._cfg, fullfn, [url])
+        force_symlink(fullfn, os.path.join(dest_dir, product_id + ".iso"))
+
+
 
 
 

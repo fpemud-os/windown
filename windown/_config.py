@@ -21,37 +21,51 @@
 # THE SOFTWARE.
 
 
+import abc
 from ._errors import ConfigError
 
 
-class ConfigBase:
+class ConfigBase(abc.ABC):
 
+    @abc.abstractmethod
     @property
-    def download_command(self):
-        raise NotImplementedError()
+    def fetch_command(self):
+        pass
 
+    @abc.abstractmethod
     @property
-    def resume_download_command(self):
-        raise NotImplementedError()
+    def resume_command(self):
+        pass
 
+    @abc.abstractmethod
+    @property
+    def fetch_resume_min_size(self):
+        pass
+
+    @abc.abstractmethod
     @property
     def checksum_failure_max_tries(self):
-        raise NotImplementedError()
+        pass
 
     def check(self):
-        if "\${FILE}" not in self.download_command:
+        if "\${FILE}" not in self.fetch_command:
             raise ConfigError("")
-        if "\${URI}" not in self.download_command:
+        if "\${URI}" not in self.fetch_command:
             raise ConfigError("")
 
-        if "\${FILE}" not in self.resume_download_command:
+        if "\${FILE}" not in self.resume_command:
             raise ConfigError("")
-        if "\${URI}" not in self.resume_download_command:
+        if "\${URI}" not in self.resume_command:
             raise ConfigError("")
 
         if not isinstance(self.checksum_failure_max_tries, int):
             raise ConfigError("")
         if self.checksum_failure_max_tries < 1:
+            raise ConfigError("")
+
+        if not isinstance(self.fetch_resume_min_size, int):
+            raise ConfigError("")
+        if self.fetch_resume_min_size < 1:
             raise ConfigError("")
 
 
