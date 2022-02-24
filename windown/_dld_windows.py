@@ -172,16 +172,7 @@ class WindowsDownloader:
             FmUtil.wgetDownload(url, fullfn)
         return fullfn
 
-    def _get_url_by_arch_edition(self, arch, edition):
-        if arch == wstage4.Arch.X86 and edition == wstage4.Edition.WINDOWS_7_PROFESSIONAL:
-            # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            return "https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-us.iso"
 
-        if arch == wstage4.Arch.X86_64 and edition == wstage4.Edition.WINDOWS_7_PROFESSIONAL:
-            # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            return "https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-us.iso"
-
-        assert False
 
 
 
