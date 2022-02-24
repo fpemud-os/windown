@@ -25,6 +25,8 @@ Various utilities.
 '''
 
 import os
+import shutil
+from ._errors import DownloadError
 
 
 def force_rm(path):
@@ -44,7 +46,89 @@ def force_mkdir(path):
     os.mkdir(path)
 
 
-def wget_download():
+def fetch(cfg, filepath, myuris, digest=None, force=False):
+    """
+    Fetch files to dstdir and also verify digest if they are available.
+
+    @param cfg: config instance.
+    @type cfg: ConfigBase
+    @param filepath: locale file path.
+    @type filepath: str
+    @param myuris: List of available fetch URIs.
+    @type myuris: list
+    @param digest: digest types and values of the fetched file.
+    @type digests: str
+    @param force: Force download, even when a file already exists. This is
+        most useful when there are no digests available, since otherwise
+        download will be automatically forced if the existing file does not
+        match the available digests. Also, this avoids the need to remove the
+        existing file in advance, which makes it possible to atomically replace
+        interference with concurrent processes.
+    @type force: bool
+    """
+
+    if force and digest:
+        # Since the force parameter can trigger unnecessary fetch when the
+        # digests match, do not allow force=True when digests are provided.
+        raise DownloadError('fetch: force=True is not allowed when digests are provided')
+
+    if len(myuris) == 0:
+        raise DownloadError('fetch: not any uri specified')
+
+    # Generally, downloading the same file repeatedly is a waste of bandwidth
+    # and time, so there needs to be a cap.
+    checksum_failure_max_tries = 5
+    v = checksum_failure_max_tries
+    try:
+        v = int(mysettings.get("PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS",
+            checksum_failure_max_tries))
+    except (ValueError, OverflowError):
+        writemsg(_("!!! Variable PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS"
+            " contains non-integer value: '%s'\n") % \
+            mysettings["PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS"], noiselevel=-1)
+        writemsg(_("!!! Using PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS "
+            "default value: %s\n") % checksum_failure_max_tries,
+            noiselevel=-1)
+        v = checksum_failure_max_tries
+    if v < 1:
+        writemsg(_("!!! Variable PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS"
+            " contains value less than 1: '%s'\n") % v, noiselevel=-1)
+        writemsg(_("!!! Using PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS "
+            "default value: %s\n") % checksum_failure_max_tries,
+            noiselevel=-1)
+        v = checksum_failure_max_tries
+    checksum_failure_max_tries = v
+    del v
+
+
+
+                if "${FILE}" not in resumecommand:
+                    writemsg_level(
+                        _("!!! %s does not contain the required ${FILE}"
+                        " parameter.\n") % resumecommand_var,
+                        level=logging.ERROR, noiselevel=-1)
+                    missing_file_param = True
+
+                if missing_file_param:
+                    writemsg_level(
+                        _("!!! Refer to the make.conf(5) man page for "
+                        "information about how to\n!!! correctly specify "
+                        "FETCHCOMMAND and RESUMECOMMAND.\n"),
+                        level=logging.ERROR, noiselevel=-1)
+                    if myfile != os.path.basename(loc):
+                        return 0
+
+
+    subprocess.check_call(cfg.download_command, )
+
+    @staticmethod
+    def wgetDownload(url, localFile=None):
+        if localFile is None:
+            FmUtil.cmdExec("wget", "-q", "--show-progress", *robust_layer.wget.additional_param(), url)
+        else:
+            FmUtil.cmdExec("wget", "-q", "--show-progress", *robust_layer.wget.additional_param(), "-O", localFile, url)
+
+
     pass
 
 

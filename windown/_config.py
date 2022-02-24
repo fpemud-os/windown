@@ -31,6 +31,9 @@ class ConfigBase:
     def resume_download_command(self):
         raise NotImplementedError()
 
+    @property
+    def checksum_failure_max_tries(self):
+        raise NotImplementedError()
 
 class Param:
 

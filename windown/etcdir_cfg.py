@@ -22,29 +22,73 @@
 
 import os
 import re
-import pathlib
-import configparser
-from ._util import Util
-from ._po import KernelType
-from ._po import SystemInit
 from ._config import ConfigBase
-from ._exception import ConfigError
+from ._errors import ConfigError
 
 
 class Config(ConfigBase):
 
     DEFAULT_CONFIG_DIR = "/etc/windown"
 
-    DEFAULT_CACHE_DIR = "/var/cache/windown"
-
     def __init__(self, cfgdir=DEFAULT_CONFIG_DIR):
         self._mainConf = os.path.join(cfgdir, "windown.conf")
 
+        defaultValue = "wget -t 3 -T 60 --passive-ftp -O \"\${DISTDIR}/\${FILE}\" \"\${URI}\""
+        self._downCmd = self._getConfVar("FETCHCOMMAND", str, defaultValue)
+
+        defaultValue = "wget -c -t 3 -T 60 --passive-ftp -O \"\${DISTDIR}/\${FILE}\" \"\${URI}\""
+        self._resumeCmd = self._getConfVar("RESUMECOMMAND", str, defaultValue)
+
+        defaultValue = 5
+        self._checksumMasTries = self._getConfVar("CHECKSUM_FAILURE_MAX_TRIES", int, defaultValue)
 
     @property
     def download_command(self):
-        raise NotImplementedError()
+        return self._downCmd
 
     @property
     def resume_download_command(self):
-        raise NotImplementedError()
+        return self._resumeCmd
+
+    @property
+    def checksum_failure_max_tries(self):
+        return self._checksumMasTries
+
+    def _getConfVar(self, varName, varClass, defaultValue=None):
+        """Returns variable value, returns "" when not found
+           Multiline variable definition is not supported yet"""
+
+        assert varClass in [str, int]
+        if defaultValue is not None:
+            assert isinstance(defaultValue, varClass)
+
+        buf = ""
+        with open(self._mainConf, 'r') as f:
+            buf = f.read()
+
+        m = re.search("^%s=\"(.*)\"$" % (varName), buf, re.MULTILINE)
+        if m is None:
+            return defaultValue
+        varVal = m.group(1)
+
+        while True:
+            m = re.search("\\${(\\S+)?}", varVal)
+            if m is None:
+                break
+            varName2 = m.group(1)
+
+            varVal2 = self._getConfVar(self._mainConf, varName2)
+            if varVal2 is None:
+                varVal2 = ""
+
+            varVal = varVal.replace(m.group(0), str(varVal2))
+
+        if varClass == str:
+            return varVal
+        elif varClass == int:
+            try:
+                return int(varVal)
+            except ValueError:
+                raise ConfigError("invalid type of variable %s" % (varName))
+        else:
+            assert False
