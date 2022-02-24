@@ -21,31 +21,32 @@
 # THE SOFTWARE.
 
 
+from itertools import product
 import os
 from ._utils import force_mkdir, force_symlink
 from ._config import ConfigBase, Param
-from ._errors import ArgumentError
+from ._errors import ArgumentError, DownloadError
 from ._download import do_fetch
 
 
 class WindowsDownloader:
 
     @staticmethod
-    def get_product_id_list(self):
+    def get_product_id_list():
         ret = []
 
         # windows 98
         if True:
             ret += [
-                "windows-98.x86.en_us",
-                "windows-98-se.x86.en_us",
+                "windows-98.x86.en-US",
+                "windows-98-se.x86.en-US",
             ]
 
         # windows xp
         if True:
             t = [
-                "windows-xp-home.x86.en_us",
-                "windows-xp-professional.x86.en_us",
+                "windows-xp-home.x86.en-US",
+                "windows-xp-professional.x86.en-US",
             ]
             ret += t
             ret += [x.replace("x86", "x86_64") for x in t]
@@ -53,28 +54,67 @@ class WindowsDownloader:
         # windows 7
         if True:
             t = [
-                "windows-7-starter.x86.en_us",
-                "windows-7-home-basic.x86.en_us",
-                "windows-7-home-premium.x86.en_us",
-                "windows-7-professional.x86.en_us",
-                "windows-7-ultimate.x86.en_us",
-                "windows-7-enterprise.x86.en_us",
+                "windows-7-starter.x86.en-US",
+                "windows-7-home-basic.x86.en-US",
+                "windows-7-home-premium.x86.en-US",
+                "windows-7-professional.x86.en-US",
+                "windows-7-ultimate.x86.en-US",
+                "windows-7-enterprise.x86.en-US",
             ]
             ret += t
             ret += [x.replace("x86", "x86_64") for x in t]
 
         # windows 10
         if True:
-            ret += [
-                "windows-11.x86.en_us",
-                "windows-11.x86_64.en_us",
+            # from https://www.microsoft.com/en-US/software-download/windows10ISO
+            # "_" corresponding to " "
+            t = [
+                "windows-10.x86.ar",                        # language: Arabic
+                "windows-10.x86.pt-BR",                     # language: Brazilian Portuguese
+                "windows-10.x86.br",                        # language: Bulgarian
+                "windows-10.x86.zh-CN",                     # language: Chinese Simplified
+                "windows-10.x86.zh-TW",                     # language: Chinese Traditional
+                "windows-10.x86.hr",                        # language: Croatian
+                "windows-10.x86.cz",                        # language: Czech
+                "windows-10.x86.da",                        # language: Danish
+                "windows-10.x86.nl",                        # language: Dutch
+                "windows-10.x86.en_US",                     # language: English
+                "windows-10.x86.en",                        # language: English International
+                "windows-10.x86.et",                        # language: Estonian
+                "windows-10.x86.fi",                        # language: Finnish
+                "windows-10.x86.fr-CA",                     # language: French Canadian
+                "windows-10.x86.de",                        # language: German
+                "windows-10.x86.el",                        # language: Greek
+                "windows-10.x86.he",                        # language: Hebrew
+                "windows-10.x86.hu",                        # language: Hungarian
+                "windows-10.x86.it",                        # language: Italian
+                "windows-10.x86.ja",                        # language: Japanese
+                "windows-10.x86.ko",                        # language: Korean
+                "windows-10.x86.lv",                        # language: Latvian
+                "windows-10.x86.lt",                        # language: Lithuanian
+                "windows-10.x86.nb",                        # language: Norwegian
+                "windows-10.x86.pl",                        # language: Polish
+                "windows-10.x86.pt-PT",                     # language: Portuguese
+                "windows-10.x86.ro",                        # language: Romanian
+                "windows-10.x86.ru",                        # language: Russian
+                "windows-10.x86.sr",                        # language: Serbian Latin
+                "windows-10.x86.sk",                        # language: Slovak
+                "windows-10.x86.sl",                        # language: Slovenian
+                "windows-10.x86.es",                        # language: Spanish
+                "windows-10.x86.Spanish_(Mexico)",
+                "windows-10.x86.sv",                        # language: Swedish
+                "windows-10.x86.th",                        # language: Thai
+                "windows-10.x86.tr",                        # language: Turkish
+                "windows-10.x86.uk",                        # language: Ukrainian
             ]
+            ret += t
+            ret += [x.replace("x86", "x86_64") for x in t]
 
         # windows 11
         if True:
             ret += [
-                "windows-11.x86.en_us",
-                "windows-11.x86_64.en_us",
+                "windows-11.x86.en-US",
+                "windows-11.x86_64.en-US",
             ]
 
         return ret
@@ -86,55 +126,65 @@ class WindowsDownloader:
         self._param = param
 
     def download(self, product_id_list, dest_dir):
+        for product_id in product_id_list:
+            if product_id not in self.get_product_id_list():
+                raise ArgumentError("invalid product-id %s" % (product_id))
         if not os.path.isdir(dest_dir):
             raise ArgumentError("invalid destination directory %s" % (dest_dir))
         if len(os.listdir(dest_dir)) > 0:
             print("WARNING: destination directory is not empty, files may be overwrited.")
 
         if len(product_id_list) == 1:
-            self._download(product_id_list[0], dest_dir)
+            self._download(product_id_list[0], dest_dir, False)
         else:
             for product_id in product_id_list:
                 d = os.path.join(dest_dir, product_id)
                 force_mkdir(d)
-                self._download(product_id, d)
+                self._download(product_id, d, True)
 
-    def _download(self, product_id, dest_dir):
-        if product_id == "windows-7-home-premium.x86.en_us":
+    def _download(self, productId, destDir, bDeleteWhenNotSupport):
+        if productId == "windows-7-home-premium.x86.en-US":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            url = "https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-us.iso"
-            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            url = "https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-US.iso"
+            self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
-        if product_id == "windows-7-home-premium.x86_64.en_us":
+        if productId == "windows-7-home-premium.x86_64.en-US":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            url = "https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-us.iso"
-            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            url = "https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-US.iso"
+            self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
-        if product_id == "windows-7-professional.x86.en_us":
+        if productId == "windows-7-professional.x86.en-US":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            url = "https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-us.iso"
-            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            url = "https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-US.iso"
+            self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
-        if product_id == "windows-7-professional.x86_64.en_us":
+        if productId == "windows-7-professional.x86_64.en-US":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            url = "https://download.microsoft.com/download/0/6/3/06365375-C346-4D65-87C7-EE41F55F736B/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x64FRE_en-us.iso"
-            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            url = "https://download.microsoft.com/download/0/6/3/06365375-C346-4D65-87C7-EE41F55F736B/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x64FRE_en-US.iso"
+            self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
-        if product_id == "windows-7-ultimate.x86.en_us":
+        if productId == "windows-7-ultimate.x86.en-US":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            url = "https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-us.iso"
-            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            url = "https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-US.iso"
+            self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
-        if product_id == "windows-7-ultimate.x86_64.en_us":
+        if productId == "windows-7-ultimate.x86_64.en-US":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
-            url = "https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-us.iso"
-            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            url = "https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-US.iso"
+            self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
+
+        if productId.startswith("windows-10-"):
+            assert False
+
+        print("WARNING: product-id %s not supported." % (productId))
+        if bDeleteWhenNotSupport:
+            os.rmdir(destDir)
 
     def __fetch_install_iso_file_simple(self, product_id, url, dest_dir):
         fullfn = os.path.join(dest_dir, os.path.basename(url))
@@ -184,7 +234,7 @@ browser = webdriver.Firefox(profile, options=options)
 link = ''
 
 try:
-    browser.get('https://www.microsoft.com/en-us/software-download/windows10ISO')
+    browser.get('https://www.microsoft.com/en-US/software-download/windows10ISO')
     time.sleep(5)
     browser.execute_script(selectEdition)
     browser.find_element_by_id('submit-product-edition').click()
