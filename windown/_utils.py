@@ -37,6 +37,22 @@ if False:  # pylint: disable=using-constant-test
     from typing import BinaryIO, List, Tuple  # NOQA pylint: disable=unused-import
 
 
+
+
+
+def force_rm(path):
+    if os.path.islink(path):
+        os.remove(path)
+    elif os.path.isfile(path):
+        os.remove(path)
+    elif os.path.isdir(path):
+        shutil.rmtree(path)
+    elif os.path.lexists(path):
+        os.remove(path)             # other type of file, such as device node
+    else:
+        pass                        # path does not exist, do nothing
+
+
 def swab_32bit(x):
     # type: (int) -> int
     '''

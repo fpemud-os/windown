@@ -71,6 +71,22 @@ class WindowsDownloader:
         assert param.check()
         self._param = param
 
+    def download(self, product_id_list, dest_dir):
+        if not os.path.isdir(dest_dir):
+            raise ArgumentError("invalid destination directory %s" % (dest_dir))
+        if len(os.listdir(dest_dir)) > 0:
+            print("WARNING: destination directory is not empty, ")
+
+        if len(product_id_list) == 1:
+            self._download(product_id_list[0], dest_dir)
+        else:
+            for product_id in product_id_list:
+                d = os.path.join(dest_dir, product_id)
+                os.mkdir(d)
+                self._download(product_id, d)
+
+
+    def _download(self, product_id, dest_dir):
 
 
 
