@@ -278,7 +278,7 @@ def showiso(isoname):
         print(iso)
         product = "document.getElementById('product-edition').innerHTML = `<option value='" + str(iso) + "' selected='selected'>dio</option>`"
         print(product)
-        browser.get("https://www.microsoft.com/it-it/software-download/windows10ISO")
+        browser.get("https://www.microsoft.com/en-us/software-download/windows10ISO")
         time.sleep(2)
         browser.execute_script(product)
         browser.find_element_by_id('submit-product-edition').click()
