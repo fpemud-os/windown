@@ -63,6 +63,20 @@ class WindowsDownloader:
             ret += t
             ret += [x.replace("x86", "x86_64") for x in t]
 
+        # windows 10
+        if True:
+            ret += [
+                "windows-11.x86.en_us",
+                "windows-11.x86_64.en_us",
+            ]
+
+        # windows 11
+        if True:
+            ret += [
+                "windows-11.x86.en_us",
+                "windows-11.x86_64.en_us",
+            ]
+
         return ret
 
     def __init__(self, cfg, param):
@@ -98,6 +112,18 @@ class WindowsDownloader:
             self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
             return
 
+        if product_id == "windows-7-professional.x86.en_us":
+            # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
+            url = "https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-us.iso"
+            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            return
+
+        if product_id == "windows-7-professional.x86_64.en_us":
+            # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
+            url = "https://download.microsoft.com/download/0/6/3/06365375-C346-4D65-87C7-EE41F55F736B/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x64FRE_en-us.iso"
+            self.__fetch_install_iso_file_simple(product_id, url, dest_dir)
+            return
+
         if product_id == "windows-7-ultimate.x86.en_us":
             # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
             url = "https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-us.iso"
@@ -114,64 +140,6 @@ class WindowsDownloader:
         fullfn = os.path.join(dest_dir, os.path.basename(url))
         do_fetch(self._cfg, fullfn, [url])
         force_symlink(fullfn, os.path.join(dest_dir, product_id + ".iso"))
-
-
-
-
-
-
-    def get_install_iso_filename_by_arch_version(self, arch, version):
-        versionPathDict = {
-            wstage4.Version.WINDOWS_98: "windows-98",
-            wstage4.Version.WINDOWS_XP: "windows-xp",
-            wstage4.Version.WINDOWS_7: "windows-7",
-        }
-        archNameDict = {
-            wstage4.Arch.X86: "x86",
-            wstage4.Arch.X86_64: "amd64",
-        }
-
-        if version == wstage4.Version.WINDOWS_98:
-            return versionPathDict[version] + "-setup.iso"
-        elif version in wstage4.Version.WINDOWS_XP:
-            return versionPathDict[version] + "-setup-" + archNameDict[arch] + ".iso"
-        elif version == wstage4.Version.WINDOWS_7:
-            return versionPathDict[version] + "-setup-" + archNameDict[arch] + ".iso"
-        else:
-            assert False
-
-    def get_install_iso_filepath_by_arch_version(self, arch, version):
-        if version == wstage4.Version.WINDOWS_98:
-            # FIXME
-            return "/usr/share/microsoft-windows-xp-setup-cd/windows-xp-setup-amd64.iso"
-        else:
-            return os.path.join(self._dir, self.get_install_iso_filename_by_arch_version(arch, version))
-
-    def get_prefered_edition_by_version(self, version):
-        d = {
-            wstage4.Version.WINDOWS_98: wstage4.Edition.WINDOWS_98_SE,
-            wstage4.Version.WINDOWS_XP: wstage4.Edition.WINDOWS_XP_PROFESSIONAL,
-            wstage4.Version.WINDOWS_7: wstage4.Edition.WINDOWS_7_ULTIMATE,
-        }
-        return d[version]
-
-    def download_files_by_arch_version(self, arch, version):
-        fullfn = self.get_install_iso_filepath_by_arch_version(arch, version)
-
-        # FIXME
-        if version == wstage4.Version.WINDOWS_98:
-            if os.path.exists(fullfn):
-                return fullfn
-            else:
-                raise Exception("windows 98 iso does not exist")
-
-        url = self._get_url_by_arch_edition(arch, self.get_prefered_edition_by_version(version))
-        if os.path.exists(fullfn):
-            print("Files already downloaded.")
-        else:
-            FmUtil.wgetDownload(url, fullfn)
-        return fullfn
-
 
 
 

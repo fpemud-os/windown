@@ -252,16 +252,6 @@ $Windows7Versions = @(
 			)
 		)
 	),
-	# 2: Windows 7 Home Premium
-	@(
-		@(""),
-		@("English (US)", "en-us",
-			@(
-				@("x64", "https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-us.iso"),
-				@("x86", "https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-us.iso")
-			)
-		)
-	)
 
 
 )
