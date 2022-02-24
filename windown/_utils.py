@@ -42,3 +42,11 @@ def force_rm(path):
 def force_mkdir(path):
     force_rm(path)
     os.mkdir(path)
+
+
+def wget_download():
+    pass
+
+
+def wget_resume():
+    pass
