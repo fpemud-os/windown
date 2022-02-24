@@ -20,17 +20,43 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""
-windown
 
-@author: Fpemud
-@license: GPLv3 License
-@contact: fpemud@sina.com
-"""
+class ConfigBase:
 
-__author__ = "fpemud@sina.com (Fpemud)"
-__version__ = "0.0.1"
+    @property
+    def download_command(self):
+        raise NotImplementedError()
+
+    @property
+    def resume_download_command(self):
+        raise NotImplementedError()
 
 
-from ._dld_windows import WindowsDownloader
-from ._dld_windows import OfficeDownloader
+class Param:
+
+    def __init__(self):
+        self.use_tmp_or_cache_dir = None
+        self.cache_dir = None
+
+    def check(self):
+        pass
+
+
+class WindowsDownloaderParam(Param):
+
+    class WindowsIdentifier:
+
+        def __init__(self):
+            self.arch = None
+            self.version = None
+            self.edition = None
+            self.lang = None
+
+    def __init__(self):
+        super().__init__()
+        self.use_full_path = None
+        self.download_items = None
+
+    def check(self):
+        super().check()
+        pass

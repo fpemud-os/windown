@@ -20,17 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""
-windown
+import os
+import re
+import pathlib
+import configparser
+from ._util import Util
+from ._po import KernelType
+from ._po import SystemInit
+from ._config import ConfigBase
+from ._exception import ConfigError
 
-@author: Fpemud
-@license: GPLv3 License
-@contact: fpemud@sina.com
-"""
 
-__author__ = "fpemud@sina.com (Fpemud)"
-__version__ = "0.0.1"
+class Config(ConfigBase):
+
+    DEFAULT_CONFIG_DIR = "/etc/windown"
+
+    DEFAULT_CACHE_DIR = "/var/cache/windown"
+
+    def __init__(self, cfgdir=DEFAULT_CONFIG_DIR):
+        self._mainConf = os.path.join(cfgdir, "windown.conf")
 
 
-from ._dld_windows import WindowsDownloader
-from ._dld_windows import OfficeDownloader
+    @property
+    def download_command(self):
+        raise NotImplementedError()
+
+    @property
+    def resume_download_command(self):
+        raise NotImplementedError()

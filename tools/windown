@@ -508,6 +508,40 @@ class PyCdlibCmdLoop(cmd.Cmd):
         return False
 
 
+def usage():
+    print('Usage: %s [options] <product-category> [download-parameters...] <dest-dir>' % (sys.argv[0]))
+    print('')
+    print('Available options:')
+    print('')
+    print('Available values for product-category argument:')
+    print('  windows')
+    print('  office')
+    print('')
+    print('Parameters for windows product category:')
+    print('  --all: download all windows products')
+    print('  --product <id>: download a specified windows product, can be specified multiple times')
+    print('                  id is formatted as "<edition>.<arch>.<language>')
+    print('    available editions:')
+    print('      windows-98')
+    print('      windows-98-se')
+    print('      windows-xp-home')
+    print('      windows-xp-professional')
+    print('      windows-xp-professional')
+    print('      windows-7-starter')
+    print('      windows-7-home-basic')
+    print('      windows-7-home-premium')
+    print('      windows-7-professional')
+    print('      windows-7-ultimate')
+    print('      windows-7-enterprise')
+    print('    available archs:')
+    print('      x86')
+    print('      x86_64')
+    print('    available languages:')
+    print('      en_US')
+    print('      zh_CN')
+    print('')
+
+
 def main():
     '''
     The main function.
