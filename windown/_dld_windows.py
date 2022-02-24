@@ -25,6 +25,41 @@ from ._config import ConfigBase, Param
 
 class WindowsDownloader:
 
+    @staticmethod
+    def get_product_id_list(self):
+        ret = []
+
+        # windows 98
+        if True:
+            ret += [
+                "windows-98.x86.en_US",
+                "windows-98-se.x86.en_US",
+            ]
+
+        # windows xp
+        if True:
+            t = [
+                "windows-xp-home.x86.en_US",
+                "windows-xp-professional.x86.en_US",
+            ]
+            ret += t
+            ret += [x.replace("x86", "x86_64") for x in t]
+
+        # windows 7
+        if True:
+            t = [
+                "windows-7-starter.x86.en_US",
+                "windows-7-home-basic.x86.en_US",
+                "windows-7-home-premium.x86.en_US",
+                "windows-7-professional.x86.en_US",
+                "windows-7-ultimate.x86.en_US",
+                "windows-7-enterprise.x86.en_US",
+            ]
+            ret += t
+            ret += [x.replace("x86", "x86_64") for x in t]
+
+        return ret
+
     def __init__(self, cfg=None, param=None):
         if cfg is not None:
             assert isinstance(cfg, ConfigBase)
@@ -36,11 +71,6 @@ class WindowsDownloader:
         assert param.check()
         self._param = param
 
-    def get_supported_product_id_list(self):
-        return [
-            
-        ]
-    
 
 
 
