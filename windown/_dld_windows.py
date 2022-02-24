@@ -32,15 +32,15 @@ class WindowsDownloader:
         # windows 98
         if True:
             ret += [
-                "windows-98.x86.en_US",
-                "windows-98-se.x86.en_US",
+                "windows-98.x86.en_us",
+                "windows-98-se.x86.en_us",
             ]
 
         # windows xp
         if True:
             t = [
-                "windows-xp-home.x86.en_US",
-                "windows-xp-professional.x86.en_US",
+                "windows-xp-home.x86.en_us",
+                "windows-xp-professional.x86.en_us",
             ]
             ret += t
             ret += [x.replace("x86", "x86_64") for x in t]
@@ -48,12 +48,12 @@ class WindowsDownloader:
         # windows 7
         if True:
             t = [
-                "windows-7-starter.x86.en_US",
-                "windows-7-home-basic.x86.en_US",
-                "windows-7-home-premium.x86.en_US",
-                "windows-7-professional.x86.en_US",
-                "windows-7-ultimate.x86.en_US",
-                "windows-7-enterprise.x86.en_US",
+                "windows-7-starter.x86.en_us",
+                "windows-7-home-basic.x86.en_us",
+                "windows-7-home-premium.x86.en_us",
+                "windows-7-professional.x86.en_us",
+                "windows-7-ultimate.x86.en_us",
+                "windows-7-enterprise.x86.en_us",
             ]
             ret += t
             ret += [x.replace("x86", "x86_64") for x in t]
