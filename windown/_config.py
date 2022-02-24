@@ -21,6 +21,9 @@
 # THE SOFTWARE.
 
 
+from ._errors import ConfigError
+
+
 class ConfigBase:
 
     @property
@@ -34,6 +37,23 @@ class ConfigBase:
     @property
     def checksum_failure_max_tries(self):
         raise NotImplementedError()
+
+    def check(self):
+        if "\${FILE}" not in self.download_command:
+            raise ConfigError("")
+        if "\${URI}" not in self.download_command:
+            raise ConfigError("")
+
+        if "\${FILE}" not in self.resume_download_command:
+            raise ConfigError("")
+        if "\${URI}" not in self.resume_download_command:
+            raise ConfigError("")
+
+        if not isinstance(self.checksum_failure_max_tries, int):
+            raise ConfigError("")
+        if self.checksum_failure_max_tries < 1:
+            raise ConfigError("")
+
 
 class Param:
 

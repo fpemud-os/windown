@@ -31,16 +31,20 @@ class Config(ConfigBase):
     DEFAULT_CONFIG_DIR = "/etc/windown"
 
     def __init__(self, cfgdir=DEFAULT_CONFIG_DIR):
+        super().__init__()
+
         self._mainConf = os.path.join(cfgdir, "windown.conf")
 
-        defaultValue = "wget -t 3 -T 60 --passive-ftp -O \"\${DISTDIR}/\${FILE}\" \"\${URI}\""
+        defaultValue = "wget -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
         self._downCmd = self._getConfVar("FETCHCOMMAND", str, defaultValue)
 
-        defaultValue = "wget -c -t 3 -T 60 --passive-ftp -O \"\${DISTDIR}/\${FILE}\" \"\${URI}\""
+        defaultValue = "wget -c -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
         self._resumeCmd = self._getConfVar("RESUMECOMMAND", str, defaultValue)
 
         defaultValue = 5
         self._checksumMasTries = self._getConfVar("CHECKSUM_FAILURE_MAX_TRIES", int, defaultValue)
+
+        self.check()
 
     @property
     def download_command(self):
