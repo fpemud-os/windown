@@ -25,7 +25,7 @@ import os
 import subprocess
 
 
-def do_fetch(cfg, filepath, myuris, digest=None, force=False):
+def do_fetch(cfg, filepath, myuris, digest=None, digest_filepath=None, force=False):
     """
     Fetch files to dstdir and also verify digest if they are available.
 
@@ -47,7 +47,8 @@ def do_fetch(cfg, filepath, myuris, digest=None, force=False):
     """
 
     assert len(myuris) >= 1
-    assert not (force and digest)   # since the force parameter can trigger unnecessary fetch when the digests match, do not allow force=True when digests are provided
+    assert not (force and digest)                   # since the force parameter can trigger unnecessary fetch when the digests match, do not allow force=True when digests are provided
+    assert not (not digest and digest_filepath)
 
     if force:
         fetchCmd = cfg.fetch_command
@@ -61,6 +62,11 @@ def do_fetch(cfg, filepath, myuris, digest=None, force=False):
     fetchCmd = fetchCmd.replace("${URI}", myuris[0])
 
     subprocess.check_call(fetchCmd, shell=True, universal_newlines=True)
+    if digest:
+        if not digest_filepath:
+            digest_filepath = filepath + ".digest"
+        with open(digest_filepath, "w") as f:
+            f.write(digest)
 
 
 # Generally, downloading the same file repeatedly is a waste of bandwidth and time, so there needs to be a cap.

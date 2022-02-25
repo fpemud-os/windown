@@ -182,34 +182,98 @@ class WindowsDownloader:
 
         if productId.startswith("windows-10-"):
             edition, arch, lang = productId.split(".")
-            url = _Win10.get_url(arch, lang)
-            self.__fetch_install_iso_file_simple(productId, url, destDir, fn=(productId + ".iso"))
+            url, digest = _Win10.get_url_and_digest(arch, lang)
+            self.__fetch_install_iso_file_simple(productId, url, destDir, fn=(productId + ".iso"), digest=digest)
             return
 
         print("WARNING: product-id %s not supported." % (productId))
         if bDeleteWhenNotSupport:
             os.rmdir(destDir)
 
-    def __fetch_install_iso_file_simple(self, productId, url, destDir, fn=None):
+    def __fetch_install_iso_file_simple(self, productId, url, destDir, fn=None, digest=None):
         if fn is not None:
             fullfn = os.path.join(destDir, fn)
         else:
             fullfn = os.path.join(destDir, os.path.basename(url))
 
-        do_fetch(self._cfg, fullfn, [url])
+        do_fetch(self._cfg, fullfn, [url], digest=digest)
 
         if fullfn != (productId + ".iso"):
             force_symlink(fullfn, os.path.join(destDir, productId + ".iso"))
 
 
+class _Win7:
+
+    @staticmethod
+    def get_url(productId):
+        # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
+
+        if productId == "windows-7-home-premium.x86.en-US":
+            return "https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-US.iso"
+        if productId == "windows-7-home-premium.x86_64.en-US":
+            return "https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-US.iso"
+        if productId == "windows-7-professional.x86.en-US":
+            return "https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-US.iso"
+        if productId == "windows-7-professional.x86_64.en-US":
+            return "https://download.microsoft.com/download/0/6/3/06365375-C346-4D65-87C7-EE41F55F736B/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x64FRE_en-US.iso"
+        if productId == "windows-7-ultimate.x86.en-US":
+            return "https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-US.iso"
+        if productId == "windows-7-ultimate.x86_64.en-US":
+            return "https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-US.iso"
+
+
 class _Win10:
 
     @staticmethod
-    def get_url(arch, lang):
-        browser = selenium.webdriver.WebKitGTK()
-        try:
-            browser.implicitly_wait(5)
+    def get_url_and_digest(arch, lang):
+        archDict = {
+            "x86":    "32-bit",
+            "x86_64": "64-bit",
+        }
 
+        langDict = {
+            "ar":    "Arabic",
+            "pt-BR": "Brazilian Portuguese",
+            "br":    "Bulgarian",
+            "zh-CN": "Chinese Simplified",
+            "zh-TW": "Chinese Traditional",
+            "hr":    "Croatian",
+            "cz":    "Czech",
+            "da":    "Danish",
+            "nl":    "Dutch",
+            "en-US": "English",
+            "en":    "English International",
+            "et":    "Estonian",
+            "fi":    "Finnish",
+            "fr-CA": "French Canadian",
+            "de":    "German",
+            "el":    "Greek",
+            "he":    "Hebrew",
+            "hu":    "Hungarian",
+            "it":    "Italian",
+            "ja":    "Japanese",
+            "ko":    "Korean",
+            "lv":    "Latvian",
+            "lt":    "Lithuanian",
+            "nb":    "Norwegian",
+            "pl":    "Polish",
+            "pt-PT": "Portuguese",
+            "ro":    "Romanian",
+            "ru":    "Russian",
+            "sr":    "Serbian Latin",
+            "sk":    "Slovak",
+            "sl":    "Slovenian",
+            "es":    "Spanish",
+            "Spanish_(Mexico)": "Spanish (Mexico)",
+            "sv":    "Swedish",
+            "th":    "Thai",
+            "tr":    "Turkish",
+            "uk":    "Ukrainian",
+        }
+
+        browser = selenium.webdriver.WebKitGTK()
+        browser.implicitly_wait(60)
+        try:
             browser.get('https://www.microsoft.com/en-US/software-download/windows10ISO')
             time.sleep(5)
 
@@ -217,54 +281,13 @@ class _Win10:
             browser.find_element_by_id("submit-proudct-edition").click()
             time.sleep(5)
 
-            d = {
-                "ar":    "Arabic",
-                "pt-BR": "Brazilian Portuguese",
-                "br":    "Bulgarian",
-                "zh-CN": "Chinese Simplified",
-                "zh-TW": "Chinese Traditional",
-                "hr":    "Croatian",
-                "cz":    "Czech",
-                "da":    "Danish",
-                "nl":    "Dutch",
-                "en-US": "English",
-                "en":    "English International",
-                "et":    "Estonian",
-                "fi":    "Finnish",
-                "fr-CA": "French Canadian",
-                "de":    "German",
-                "el":    "Greek",
-                "he":    "Hebrew",
-                "hu":    "Hungarian",
-                "it":    "Italian",
-                "ja":    "Japanese",
-                "ko":    "Korean",
-                "lv":    "Latvian",
-                "lt":    "Lithuanian",
-                "nb":    "Norwegian",
-                "pl":    "Polish",
-                "pt-PT": "Portuguese",
-                "ro":    "Romanian",
-                "ru":    "Russian",
-                "sr":    "Serbian Latin",
-                "sk":    "Slovak",
-                "sl":    "Slovenian",
-                "es":    "Spanish",
-                "Spanish_(Mexico)": "Spanish (Mexico)",
-                "sv":    "Swedish",
-                "th":    "Thai",
-                "tr":    "Turkish",
-                "uk":    "Ukrainian",
-            }
-            browser.find_element_by_id("product-language").select_by_visible_text(d[lang])
+            browser.find_element_by_id("product-language").select_by_visible_text(langDict[lang])
             browser.find_element_by_id("submit-sku").click()
             time.sleep(5)
 
-            d = {
-                "x86":    "32-bit",
-                "x86_64": "64-bit",
-            }
-            return browser.find_element_by_partial_link_text(d[arch]).get_attribute('href')
+            url = browser.find_element_by_partial_link_text(archDict[arch]).get_attribute('href')
+            digest = browser.find_element_by_xpath("//td[text='%s %s']/following-sibling" % (langDict[lang], archDict[arch])).text
+            return (url, digest)
         finally:
             browser.quit()
 

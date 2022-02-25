@@ -241,57 +241,6 @@ $WindowsVersions = @(
 	)
 )
 
-#region Functions
-function Select-Language([string]$LangName)
-{
-	# Use the system locale to try select the most appropriate language
-	[string]$SysLocale = [System.Globalization.CultureInfo]::CurrentUICulture.Name
-	if (($SysLocale.StartsWith("ar") -and $LangName -like "*Arabic*") -or `
-		($SysLocale -eq "pt-BR" -and $LangName -like "*Brazil*") -or `
-		($SysLocale.StartsWith("ar") -and $LangName -like "*Bulgar*") -or `
-		($SysLocale -eq "zh-CN" -and $LangName -like "*Chinese*" -and $LangName -like "*simp*") -or `
-		($SysLocale -eq "zh-TW" -and $LangName -like "*Chinese*" -and $LangName -like "*trad*") -or `
-		($SysLocale.StartsWith("hr") -and $LangName -like "*Croat*") -or `
-		($SysLocale.StartsWith("cz") -and $LangName -like "*Czech*") -or `
-		($SysLocale.StartsWith("da") -and $LangName -like "*Danish*") -or `
-		($SysLocale.StartsWith("nl") -and $LangName -like "*Dutch*") -or `
-		($SysLocale -eq "en-US" -and $LangName -eq "English") -or `
-		($SysLocale.StartsWith("en") -and $LangName -like "*English*" -and ($LangName -like "*inter*" -or $LangName -like "*ingdom*")) -or `
-		($SysLocale.StartsWith("et") -and $LangName -like "*Eston*") -or `
-		($SysLocale.StartsWith("fi") -and $LangName -like "*Finn*") -or `
-		($SysLocale -eq "fr-CA" -and $LangName -like "*French*" -and $LangName -like "*Canad*") -or `
-		($SysLocale.StartsWith("fr") -and $LangName -eq "French") -or `
-		($SysLocale.StartsWith("de") -and $LangName -like "*German*") -or `
-		($SysLocale.StartsWith("el") -and $LangName -like "*Greek*") -or `
-		($SysLocale.StartsWith("he") -and $LangName -like "*Hebrew*") -or `
-		($SysLocale.StartsWith("hu") -and $LangName -like "*Hungar*") -or `
-		($SysLocale.StartsWith("id") -and $LangName -like "*Indones*") -or `
-		($SysLocale.StartsWith("it") -and $LangName -like "*Italia*") -or `
-		($SysLocale.StartsWith("ja") -and $LangName -like "*Japan*") -or `
-		($SysLocale.StartsWith("ko") -and $LangName -like "*Korea*") -or `
-		($SysLocale.StartsWith("lv") -and $LangName -like "*Latvia*") -or `
-		($SysLocale.StartsWith("lt") -and $LangName -like "*Lithuania*") -or `
-		($SysLocale.StartsWith("ms") -and $LangName -like "*Malay*") -or `
-		($SysLocale.StartsWith("nb") -and $LangName -like "*Norw*") -or `
-		($SysLocale.StartsWith("fa") -and $LangName -like "*Persia*") -or `
-		($SysLocale.StartsWith("pl") -and $LangName -like "*Polish*") -or `
-		($SysLocale -eq "pt-PT" -and $LangName -eq "Portuguese") -or `
-		($SysLocale.StartsWith("ro") -and $LangName -like "*Romania*") -or `
-		($SysLocale.StartsWith("ru") -and $LangName -like "*Russia*") -or `
-		($SysLocale.StartsWith("sr") -and $LangName -like "*Serbia*") -or `
-		($SysLocale.StartsWith("sk") -and $LangName -like "*Slovak*") -or `
-		($SysLocale.StartsWith("sl") -and $LangName -like "*Slovenia*") -or `
-		($SysLocale -eq "es-ES" -and $LangName -eq "Spanish") -or `
-		($SysLocale.StartsWith("es") -and $Locale -ne "es-ES" -and $LangName -like "*Spanish*") -or `
-		($SysLocale.StartsWith("sv") -and $LangName -like "*Swed*") -or `
-		($SysLocale.StartsWith("th") -and $LangName -like "*Thai*") -or `
-		($SysLocale.StartsWith("tr") -and $LangName -like "*Turk*") -or `
-		($SysLocale.StartsWith("uk") -and $LangName -like "*Ukrain*") -or `
-		($SysLocale.StartsWith("vi") -and $LangName -like "*Vietnam*")) {
-		return $True
-	}
-	return $False
-}
 
 function Add-Entry([int]$pos, [string]$Name, [array]$Items, [string]$DisplayName)
 {
