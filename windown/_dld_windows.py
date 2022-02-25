@@ -26,7 +26,7 @@ import time
 import selenium
 from ._utils import force_mkdir, force_symlink
 from ._config import ConfigBase, Param
-from ._errors import ArgumentError, DownloadError
+from ._errors import ArgumentError, FetchError
 from ._handy import do_fetch
 
 

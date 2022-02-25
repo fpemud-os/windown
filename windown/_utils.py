@@ -26,7 +26,7 @@ Various utilities.
 
 import os
 import shutil
-from ._errors import DownloadError
+from ._errors import FetchError
 
 
 def force_rm(path):

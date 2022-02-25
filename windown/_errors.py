@@ -29,5 +29,5 @@ class ConfigError(Exception):
     pass
 
 
-class DownloadError(Exception):
+class FetchError(Exception):
     pass
