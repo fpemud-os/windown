@@ -476,20 +476,3 @@ class _Win11:
             return (url, digest)
         finally:
             browser.quit()
-
-
-# https://tb.rg-adguard.net/public.php?lang=zh-CN
-
-# # good
-# https://github.com/pbatard/Fido/blob/master/Fido.ps1
-
-# https://superuser.com/questions/1175110/safe-way-to-verify-that-a-microsoft-iso-has-not-been-tampered-with
-
-
-# reply this issue:
-# https://github.com/pbatard/rufus/issues/1875
-
-
-
-# https://www.heidoc.net/php/myvsdump.php
-
