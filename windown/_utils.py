@@ -20,13 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-Various utilities.
-'''
-
 import os
 import shutil
-from ._errors import FetchError
 
 
 def force_rm(path):

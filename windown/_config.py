@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
 import abc
 from ._errors import ConfigError
 
@@ -92,33 +91,3 @@ class ConfigBase(abc.ABC):
             raise ConfigError("")
         if self.fetch_resume_min_size < 1:
             raise ConfigError("")
-
-
-class Param:
-
-    def __init__(self):
-        self.use_tmp_or_cache_dir = None
-        self.cache_dir = None
-
-    def check(self):
-        pass
-
-
-class WindowsDownloaderParam(Param):
-
-    class WindowsIdentifier:
-
-        def __init__(self):
-            self.arch = None
-            self.version = None
-            self.edition = None
-            self.lang = None
-
-    def __init__(self):
-        super().__init__()
-        self.use_full_path = None
-        self.download_items = None
-
-    def check(self):
-        super().check()
-        pass

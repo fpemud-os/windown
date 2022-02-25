@@ -32,5 +32,11 @@ __author__ = "fpemud@sina.com (Fpemud)"
 __version__ = "0.0.1"
 
 
+from ._config import ConfigBase
+
 from ._dld_windows import WindowsDownloader
 from ._dld_windows import OfficeDownloader
+
+from ._errors import ArgumentError
+from ._errors import ConfigError
+from ._errors import FetchError
