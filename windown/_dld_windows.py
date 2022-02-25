@@ -39,8 +39,30 @@ class WindowsDownloader:
         # windows 98
         if True:
             ret += [
-                "windows-98.x86.en-US",
-                "windows-98-se.x86.en-US",
+                "windows-98-se.x86.en-US",                  # language: English
+                "windows-98-se.x86.it",                     # language: Italian
+                "windows-98-se.x86.ja",                     # language: Japanese
+                "windows-98-se.x86.ko",                     # language: Korean
+                "windows-98-se.x86.pt-PT",                  # language: Portuguese
+                "windows-98-se.x86.ru",                     # language: Russian
+                "windows-98-se.x86.sl",                     # language: Slovenian
+                "windows-98-se.x86.es",                     # language: Spanish
+                "windows-98-se.x86.tr",                     # language: Turkish
+            ]
+            ret += [
+                "windows-98-se-oem.x86.en-US",              # language: English
+                "windows-98-se-oem.x86.cz",                 # language: Czech
+                "windows-98-se-oem.x86.nl",                 # language: Dutch
+                "windows-98-se-oem.x86.fi",                 # language: Finnish
+                "windows-98-se-oem.x86.de",                 # language: German
+                "windows-98-se-oem.x86.el",                 # language: Greek
+                "windows-98-se-oem.x86.hu",                 # language: Hungarian
+                "windows-98-se-oem.x86.nb",                 # language: Norwegian
+                "windows-98-se-oem.x86.pl",                 # language: Polish
+                "windows-98-se-oem.x86.pt-BR",              # language: Brazilian Portuguese
+                "windows-98-se-oem.x86.sk",                 # language: Slovak
+                "windows-98-se-oem.x86.sv",                 # language: Swedish
+                "windows-98-se-oem.x86.zh-TW",              # language: Chinese Traditional
             ]
 
         # windows xp
@@ -215,6 +237,14 @@ class WindowsDownloader:
 
         if fullfn != (productId + ".iso"):
             force_symlink(fullfn, os.path.join(destDir, productId + ".iso"))
+
+
+class _Win98:
+
+    @staticmethod
+    def get_url_and_digest(productId):
+        pass
+
 
 
 class _Win7:
