@@ -53,11 +53,6 @@ class ConfigBase(abc.ABC):
 
     @abc.abstractmethod
     @property
-    def fetch_resume_min_size(self):
-        pass
-
-    @abc.abstractmethod
-    @property
     def checksum_failure_max_tries(self):
         pass
 
@@ -85,9 +80,4 @@ class ConfigBase(abc.ABC):
         if not isinstance(self.checksum_failure_max_tries, int):
             raise ConfigError("")
         if self.checksum_failure_max_tries < 1:
-            raise ConfigError("")
-
-        if not isinstance(self.fetch_resume_min_size, int):
-            raise ConfigError("")
-        if self.fetch_resume_min_size < 1:
             raise ConfigError("")

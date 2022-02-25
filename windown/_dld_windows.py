@@ -174,30 +174,30 @@ class WindowsDownloader:
 
         return ret
 
-    def __init__(self, cfg, param):
+    def __init__(self, cfg):
         assert isinstance(cfg, ConfigBase)
-        assert isinstance(param, Param) and param.check()
         self._cfg = cfg
-        self._param = param
 
-    def download(self, product_id_list, dest_dir, create_product_subdir=False):
-        assert all([x in self.get_product_id_list() for x in product_id_list])
+    def download(self, product_id, dest_dir, create_product_subdir=False):
+        assert product_id in self.get_product_id_list()
 
         if not os.path.isdir(dest_dir):
             raise ArgumentError("invalid destination directory %s" % (dest_dir))
         if len(os.listdir(dest_dir)) > 0:
             print("WARNING: destination directory is not empty, files may be overwrited.")
 
-        if len(product_id_list) == 1:
-            if create_product_subdir:
-                dest_dir = os.path.join(dest_dir, product_id)
-            force_mkdir(dest_dir)
-            self._download(product_id_list[0], dest_dir, create_product_subdir)
-        else:
-            for product_id in product_id_list:
-                d = os.path.join(dest_dir, product_id)
-                force_mkdir(d)
-                self._download(product_id, d, True)
+        if create_product_subdir:
+            dest_dir = os.path.join(dest_dir, product_id)
+        force_mkdir(dest_dir)
+        self._download(product_id, dest_dir, create_product_subdir)
+
+    def get_product_subdir(self, dest_dir, product_id):
+        assert product_id in self.get_product_id_list()
+        return os.path.join(dest_dir, product_id)
+
+    def get_install_iso_filepath(self, dest_dir, product_id):
+        assert product_id in self.get_product_id_list()
+        return os.path.join(dest_dir, product_id + ".iso")
 
     def _download(self, productId, destDir, bDeleteWhenNotSupport):
         if productId.startswith("windows-98-"):
@@ -240,7 +240,7 @@ class WindowsDownloader:
         do_fetch(self._cfg, fullfn, [url], digest=digest, digest_algorithm=digestAlgo)
 
         if fullfn != (productId + ".iso"):
-            force_symlink(fullfn, os.path.join(destDir, productId + ".iso"))
+            force_symlink(fullfn, productId + ".iso")
 
 
 class _Win98:

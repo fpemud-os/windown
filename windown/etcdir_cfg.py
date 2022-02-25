@@ -50,9 +50,6 @@ class Config(ConfigBase):
         defaultValue = "wget -q -c -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
         self._resumeQuietCmd = self._getConfVar("RESUME_COMMAND_QUIET", str, defaultValue)
 
-        defaultValue = 350 * 1024   # 350K
-        self._fetchResumeMinSize = self._getConfVar("FETCH_RESUME_MIN_SIZE", int, defaultValue)
-
         defaultValue = 5
         self._checksumMasTries = self._getConfVar("CHECKSUM_FAILURE_MAX_TRIES", int, defaultValue)
 
@@ -78,10 +75,6 @@ class Config(ConfigBase):
     @property
     def resume_command_quiet(self):
         return self._resumeQuietCmd
-
-    @property
-    def fetch_resume_min_size(self):
-        return self._fetchResumeMinSize
 
     @property
     def checksum_failure_max_tries(self):
