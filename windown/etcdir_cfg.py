@@ -35,11 +35,20 @@ class Config(ConfigBase):
 
         self._mainConf = os.path.join(cfgdir, "windown.conf")
 
+        defaultValue = False
+        self._quiet = self._getConfVar("QUIET", str, defaultValue)
+
         defaultValue = "wget -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
-        self._downCmd = self._getConfVar("FETCHCOMMAND", str, defaultValue)
+        self._downCmd = self._getConfVar("FETCH_COMMAND", str, defaultValue)
 
         defaultValue = "wget -c -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
-        self._resumeCmd = self._getConfVar("RESUMECOMMAND", str, defaultValue)
+        self._resumeCmd = self._getConfVar("RESUME_COMMAND", str, defaultValue)
+
+        defaultValue = "wget -q -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
+        self._downQuietCmd = self._getConfVar("FETCH_COMMAND_QUIET", str, defaultValue)
+
+        defaultValue = "wget -q -c -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\""
+        self._resumeQuietCmd = self._getConfVar("RESUME_COMMAND_QUIET", str, defaultValue)
 
         defaultValue = 350 * 1024   # 350K
         self._fetchResumeMinSize = self._getConfVar("FETCH_RESUME_MIN_SIZE", int, defaultValue)
@@ -49,6 +58,11 @@ class Config(ConfigBase):
 
         self.check()
 
+    @abc.abstractmethod
+    @property
+    def quiet(self):
+        self._quiet
+
     @property
     def fetch_command(self):
         return self._downCmd
@@ -56,6 +70,14 @@ class Config(ConfigBase):
     @property
     def resume_command(self):
         return self._resumeCmd
+
+    @property
+    def fetch_command_quiet(self):
+        return self._downQuietCmd
+
+    @property
+    def resume_command_quiet(self):
+        return self._resumeQuietCmd
 
     @property
     def fetch_resume_min_size(self):

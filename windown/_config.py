@@ -29,12 +29,27 @@ class ConfigBase(abc.ABC):
 
     @abc.abstractmethod
     @property
+    def quiet(self):
+        pass
+
+    @abc.abstractmethod
+    @property
     def fetch_command(self):
         pass
 
     @abc.abstractmethod
     @property
     def resume_command(self):
+        pass
+
+    @abc.abstractmethod
+    @property
+    def fetch_command_quiet(self):
+        pass
+
+    @abc.abstractmethod
+    @property
+    def resume_command_quiet(self):
         pass
 
     @abc.abstractmethod
@@ -53,9 +68,19 @@ class ConfigBase(abc.ABC):
         if "\${URI}" not in self.fetch_command:
             raise ConfigError("")
 
+        if "\${FILE}" not in self.fetch_command_quiet:
+            raise ConfigError("")
+        if "\${URI}" not in self.fetch_command_quiet:
+            raise ConfigError("")
+
         if "\${FILE}" not in self.resume_command:
             raise ConfigError("")
         if "\${URI}" not in self.resume_command:
+            raise ConfigError("")
+
+        if "\${FILE}" not in self.resume_command_quiet:
+            raise ConfigError("")
+        if "\${URI}" not in self.resume_command_quiet:
             raise ConfigError("")
 
         if not isinstance(self.checksum_failure_max_tries, int):
