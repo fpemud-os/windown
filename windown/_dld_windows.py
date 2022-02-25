@@ -195,7 +195,9 @@ class WindowsDownloader:
             fullfn = os.path.join(destDir, fn)
         else:
             fullfn = os.path.join(destDir, os.path.basename(url))
+
         do_fetch(self._cfg, fullfn, [url])
+
         if fullfn != (productId + ".iso"):
             force_symlink(fullfn, os.path.join(destDir, productId + ".iso"))
 
