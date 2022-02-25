@@ -79,7 +79,7 @@ class WindowsDownloader:
                 "windows-10.x86.cz",                        # language: Czech
                 "windows-10.x86.da",                        # language: Danish
                 "windows-10.x86.nl",                        # language: Dutch
-                "windows-10.x86.en_US",                     # language: English
+                "windows-10.x86.en-US",                     # language: English
                 "windows-10.x86.en",                        # language: English International
                 "windows-10.x86.et",                        # language: Estonian
                 "windows-10.x86.fi",                        # language: Finnish
@@ -102,7 +102,7 @@ class WindowsDownloader:
                 "windows-10.x86.sk",                        # language: Slovak
                 "windows-10.x86.sl",                        # language: Slovenian
                 "windows-10.x86.es",                        # language: Spanish
-                "windows-10.x86.Spanish_(Mexico)",
+                "windows-10.x86.Spanish_(Mexico)",                                           # FIXME
                 "windows-10.x86.sv",                        # language: Swedish
                 "windows-10.x86.th",                        # language: Thai
                 "windows-10.x86.tr",                        # language: Turkish
@@ -227,7 +227,7 @@ class _Win10:
                 "cz":    "Czech",
                 "da":    "Danish",
                 "nl":    "Dutch",
-                "en_US": "English",
+                "en-US": "English",
                 "en":    "English International",
                 "et":    "Estonian",
                 "fi":    "Finnish",
@@ -286,96 +286,4 @@ https://github.com/pbatard/rufus/issues/1875
 
 
 https://www.heidoc.net/php/myvsdump.php
-
-
-
-import sys, time
-from selenium import webdriver
-
-selectEdition = """
-options = Array.from(document.querySelectorAll('#product-edition option'));
-optionToSelect = Math.max.apply(null, options.map(o => o.value));
-options.filter(o => o.value == optionToSelect)[0].selected=true;
-"""
-
-selectLanguage = """
-options = Array.from(document.querySelectorAll('#product-languages option'));
-options.filter(o => o.value.includes('"English"'))[0].selected=true;
-"""
-
-options = webdriver.firefox.options.Options()
-options.headless = True
-profile = webdriver.FirefoxProfile()
-browser = webdriver.Firefox(profile, options=options)
-
-link = ''
-
-try:
-    browser.get('https://www.microsoft.com/en-US/software-download/windows10ISO')
-    time.sleep(5)
-    browser.execute_script(selectEdition)
-    browser.find_element_by_id('submit-product-edition').click()
-    time.sleep(5)
-    browser.execute_script(selectLanguage)
-    browser.find_element_by_id('submit-sku').click()
-    time.sleep(5)
-    link = browser.find_element_by_partial_link_text('64-bit').get_attribute('href')
-    time.sleep(5)
-
-finally:
-    browser.quit()
-    print(link)
-    sys.exit(1 if len(link) == 0 else 0)
-
-
-
-
-import sys, json, time
-from selenium import webdriver
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
-def showiso(isoname):
-    iso = {
-        'Windows81': '52',
-        'Win10Education': '1056',
-        'Win10HomeAndPro': '1060',
-        'Win10HomeChina': '1061'
-    }
-    x = json.dumps(iso)
-    x = json.loads(x)
-    if(isoname == ''):
-        for isos in iso:
-            print(isos)
-    else:
-        opts = Options()
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference("general.useragent.override", "Mozilla/5.0 (Windows Phone 10.0;  Android 6.0.1; Nokia; Lumia 520) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Mobile Safari/537.36 Edge/14.14348")
-        browser = Firefox(profile, firefox_options=opts)
-        iso = x[isoname]
-        print(iso)
-        product = "document.getElementById('product-edition').innerHTML = `<option value='" + str(iso) + "' selected='selected'>dio</option>`"
-        print(product)
-        browser.get("https://www.microsoft.com/en-us/software-download/windows10ISO")
-        time.sleep(2)
-        browser.execute_script(product)
-        browser.find_element_by_id('submit-product-edition').click()
-        time.sleep(5)
-
-if __name__ == '__main__':
-    usage = "windows iso downloader\nusage:\n./" + sys.argv[0] + " --showiso\n./" + sys.argv[0] + " windowsISONAME"
-    if(len(sys.argv) == 1):
-        print(usage)
-    elif(len(sys.argv) == 2):
-        if(sys.argv[1] == "--showiso"):
-            print('available iso:')
-            showiso('')
-            exit(0)
-        try:
-            showiso(sys.argv[1])
-        except Exception as e:
-            print(e)
-            print('iso not found.')
-    else:
-        print(usage)
-        exit(1)
 
