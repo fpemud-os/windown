@@ -180,17 +180,19 @@ class WindowsDownloader:
         self._cfg = cfg
         self._param = param
 
-    def download(self, product_id_list, dest_dir):
-        for product_id in product_id_list:
-            if product_id not in self.get_product_id_list():
-                raise ArgumentError("invalid product-id %s" % (product_id))
+    def download(self, product_id_list, dest_dir, create_product_subdir=False):
+        assert all([x in self.get_product_id_list() for x in product_id_list])
+
         if not os.path.isdir(dest_dir):
             raise ArgumentError("invalid destination directory %s" % (dest_dir))
         if len(os.listdir(dest_dir)) > 0:
             print("WARNING: destination directory is not empty, files may be overwrited.")
 
         if len(product_id_list) == 1:
-            self._download(product_id_list[0], dest_dir, False)
+            if create_product_subdir:
+                dest_dir = os.path.join(dest_dir, product_id)
+            force_mkdir(dest_dir)
+            self._download(product_id_list[0], dest_dir, create_product_subdir)
         else:
             for product_id in product_id_list:
                 d = os.path.join(dest_dir, product_id)
