@@ -27,7 +27,7 @@ import selenium
 from ._utils import force_mkdir, force_symlink
 from ._config import ConfigBase, Param
 from ._errors import ArgumentError, DownloadError
-from ._download import do_fetch
+from ._handy import do_fetch
 
 
 class WindowsDownloader:
@@ -206,7 +206,12 @@ class WindowsDownloader:
         else:
             fullfn = os.path.join(destDir, os.path.basename(url))
 
-        do_fetch(self._cfg, fullfn, [url], digest=digest)
+        if digest is not None:
+            digestAlgo = "sha256"
+        else:
+            digestAlgo = None
+        
+        do_fetch(self._cfg, fullfn, [url], digest=digest, digest_algorithm=digestAlgo)
 
         if fullfn != (productId + ".iso"):
             force_symlink(fullfn, os.path.join(destDir, productId + ".iso"))
