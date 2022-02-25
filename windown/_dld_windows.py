@@ -21,8 +21,9 @@
 # THE SOFTWARE.
 
 
-from itertools import product
 import os
+import time
+import selenium
 from ._utils import force_mkdir, force_symlink
 from ._config import ConfigBase, Param
 from ._errors import ArgumentError, DownloadError
@@ -180,16 +181,90 @@ class WindowsDownloader:
             return
 
         if productId.startswith("windows-10-"):
-            assert False
+            edition, arch, lang = productId.split(".")
+            url = _Win10.get_url(arch, lang)
+            self.__fetch_install_iso_file_simple(productId, url, destDir, fn=(productId + ".iso"))
+            return
 
         print("WARNING: product-id %s not supported." % (productId))
         if bDeleteWhenNotSupport:
             os.rmdir(destDir)
 
-    def __fetch_install_iso_file_simple(self, product_id, url, dest_dir):
-        fullfn = os.path.join(dest_dir, os.path.basename(url))
+    def __fetch_install_iso_file_simple(self, productId, url, destDir, fn=None):
+        if fn is not None:
+            fullfn = os.path.join(destDir, fn)
+        else:
+            fullfn = os.path.join(destDir, os.path.basename(url))
         do_fetch(self._cfg, fullfn, [url])
-        force_symlink(fullfn, os.path.join(dest_dir, product_id + ".iso"))
+        if fullfn != (productId + ".iso"):
+            force_symlink(fullfn, os.path.join(destDir, productId + ".iso"))
+
+
+class _Win10:
+
+    @staticmethod
+    def get_url(arch, lang):
+        browser = selenium.webdriver.WebKitGTK()
+        try:
+            browser.implicitly_wait(5)
+
+            browser.get('https://www.microsoft.com/en-US/software-download/windows10ISO')
+            time.sleep(5)
+
+            browser.find_element_by_id("product-edition").select_by_index(1)
+            browser.find_element_by_id("submit-proudct-edition").click()
+            time.sleep(5)
+
+            d = {
+                "ar":    "Arabic",
+                "pt-BR": "Brazilian Portuguese",
+                "br":    "Bulgarian",
+                "zh-CN": "Chinese Simplified",
+                "zh-TW": "Chinese Traditional",
+                "hr":    "Croatian",
+                "cz":    "Czech",
+                "da":    "Danish",
+                "nl":    "Dutch",
+                "en_US": "English",
+                "en":    "English International",
+                "et":    "Estonian",
+                "fi":    "Finnish",
+                "fr-CA": "French Canadian",
+                "de":    "German",
+                "el":    "Greek",
+                "he":    "Hebrew",
+                "hu":    "Hungarian",
+                "it":    "Italian",
+                "ja":    "Japanese",
+                "ko":    "Korean",
+                "lv":    "Latvian",
+                "lt":    "Lithuanian",
+                "nb":    "Norwegian",
+                "pl":    "Polish",
+                "pt-PT": "Portuguese",
+                "ro":    "Romanian",
+                "ru":    "Russian",
+                "sr":    "Serbian Latin",
+                "sk":    "Slovak",
+                "sl":    "Slovenian",
+                "es":    "Spanish",
+                "Spanish_(Mexico)": "Spanish (Mexico)",
+                "sv":    "Swedish",
+                "th":    "Thai",
+                "tr":    "Turkish",
+                "uk":    "Ukrainian",
+            }
+            browser.find_element_by_id("product-language").select_by_visible_text(d[lang])
+            browser.find_element_by_id("submit-sku").click()
+            time.sleep(5)
+
+            d = {
+                "x86":    "32-bit",
+                "x86_64": "64-bit",
+            }
+            return browser.find_element_by_partial_link_text(d[arch]).get_attribute('href')
+        finally:
+            browser.quit()
 
 
 
