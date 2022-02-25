@@ -200,7 +200,7 @@ class WindowsDownloader:
 
     def _download(self, productId, destDir, bDeleteWhenNotSupport):
         if productId.startswith("windows-98-"):
-            url, digest = _Win7.get_url(productId)
+            url, digest = _Win98.get_url_and_digest(productId)
             self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
