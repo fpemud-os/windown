@@ -338,6 +338,13 @@ class _Win98:
         assert False
 
 
+class _WinXP:
+
+    @staticmethod
+    def get_url(productId):
+        pass
+
+
 class _Win7:
 
     @staticmethod
