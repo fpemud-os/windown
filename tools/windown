@@ -22,6 +22,7 @@
 
 import sys
 import windown
+import windown.etcdir_cfg
 
 
 def usage():
@@ -57,7 +58,7 @@ def downloadWindows(bForce, bCreateSubDir, destDir, bAll, productIdList):
     if bAll:
         productIdList = windown.WindowsDownloader.get_product_id_list()
 
-    obj = windown.WindowsDownloader(windown.EtcDirCfg())
+    obj = windown.WindowsDownloader(windown.etcdir_cfg.Config())
     for productId in productIdList:
         obj.download(productId, destDir, bCreateSubDir)
 

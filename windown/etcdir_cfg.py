@@ -22,6 +22,7 @@
 
 import os
 import re
+import pathlib
 from ._config import ConfigBase
 from ._errors import ConfigError
 
@@ -36,7 +37,7 @@ class Config(ConfigBase):
         self._mainConf = os.path.join(cfgdir, "windown.conf")
 
         defaultValue = False
-        self._quiet = self._getConfVar("QUIET", str, defaultValue)
+        self._quiet = self._getConfVar("QUIET", bool, defaultValue)
 
         defaultValue = r'wget -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\"'
         self._downCmd = self._getConfVar("FETCH_COMMAND", str, defaultValue)
@@ -57,7 +58,7 @@ class Config(ConfigBase):
 
     @property
     def quiet(self):
-        self._quiet
+        return self._quiet
 
     @property
     def fetch_command(self):
@@ -79,17 +80,18 @@ class Config(ConfigBase):
     def checksum_failure_max_tries(self):
         return self._checksumMasTries
 
-    def _getConfVar(self, varName, varClass, defaultValue=None):
+    def _getConfVar(self, varName, varClass, defaultValue):
         """Returns variable value, returns "" when not found
            Multiline variable definition is not supported yet"""
 
-        assert varClass in [str, int]
+        assert varClass in [str, int, bool]
         if defaultValue is not None:
             assert isinstance(defaultValue, varClass)
 
-        buf = ""
-        with open(self._mainConf, 'r') as f:
-            buf = f.read()
+        if os.path.exists(self._mainConf):
+            buf = pathlib.Path(self._mainConf).read_text()
+        else:
+            buf = ""
 
         m = re.search("^%s=\"(.*)\"$" % (varName), buf, re.MULTILINE)
         if m is None:
@@ -114,6 +116,13 @@ class Config(ConfigBase):
             try:
                 return int(varVal)
             except ValueError:
+                raise ConfigError("invalid type of variable %s" % (varName))
+        elif varClass == bool:
+            if varVal == "true":
+                return True
+            elif varVal == "false":
+                return False
+            else:
                 raise ConfigError("invalid type of variable %s" % (varName))
         else:
             assert False
