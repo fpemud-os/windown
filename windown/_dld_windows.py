@@ -286,7 +286,7 @@ class WindowsDownloader:
         do_fetch(self._cfg, fullfn, [url], digest=digest, digest_algorithm=digestAlgo)
 
         if fn != (productId + ".iso"):
-            force_symlink(fullfn, productId + ".iso")
+            force_symlink(fn, os.path.join(destDir, productId + ".iso"))
 
 
 class _Win98:
