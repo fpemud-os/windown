@@ -39,16 +39,16 @@ class Config(ConfigBase):
         defaultValue = False
         self._quiet = self._getConfVar("QUIET", bool, defaultValue)
 
-        defaultValue = r'wget -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\"'
+        defaultValue = r'wget -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
         self._downCmd = self._getConfVar("FETCH_COMMAND", str, defaultValue)
 
-        defaultValue = r'wget -c -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\"'
+        defaultValue = r'wget -c -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
         self._resumeCmd = self._getConfVar("RESUME_COMMAND", str, defaultValue)
 
-        defaultValue = r'wget -q -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\"'
+        defaultValue = r'wget -q -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
         self._downQuietCmd = self._getConfVar("FETCH_COMMAND_QUIET", str, defaultValue)
 
-        defaultValue = r'wget -q -c -t 3 -T 60 --passive-ftp -O \"\${FILE}\" \"\${URI}\"'
+        defaultValue = r'wget -q -c -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
         self._resumeQuietCmd = self._getConfVar("RESUME_COMMAND_QUIET", str, defaultValue)
 
         defaultValue = 5

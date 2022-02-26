@@ -78,16 +78,10 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
             cmd = cfg.fetch_command if not cfg.quiet else cfg.fetch_command_quiet
         else:
             cmd = cfg.resume_command if not cfg.quiet else cfg.resume_command_quiet
-
-        print("ccx", cmd)
-
+        cmd = cmd.replace(r'\"', r'"')                  # FIXME
         cmd = cmd.replace(r"${FILE}", filepath)
         cmd = cmd.replace(r"${URI}", myuris[0])
-
-        print("cc", cmd)
-
         subprocess.check_call(cmd, shell=True, universal_newlines=True)
-
 
         # verify digest
         if digest and not _verify(filepath, digest, digest_algorithm):
