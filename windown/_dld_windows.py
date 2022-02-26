@@ -252,8 +252,8 @@ class WindowsDownloader:
             return
 
         if productId.startswith("windows-7-"):
-            url = _Win7.get_url(productId)
-            self.__fetch_install_iso_file_simple(productId, url, destDir)
+            url, fn = _Win7.get_url_and_fn(productId)
+            self.__fetch_install_iso_file_simple(productId, url, destDir, fn=fn)
             return
 
         if productId.startswith("windows-10-"):
@@ -392,7 +392,7 @@ class _WinXP:
     def get_url(productId):
         # from https://windowslay.com/windows-xp-sp3-iso-download/
         if productId == "windows-xp-professional.x86.en-US":
-            return "https://files.windowslay.com/en_windows_xp_professional_sp3_Nov_2013_Incl_SATA_Drivers.iso"
+            return "https://files.windowslay.com/en_windows_xp_professional_sp3_Nov_2013_Incl_SATA_Drivers.iso"     # FIXME: not origian disk
 
         # from https://windowslay.com/windows-xp-professional-64-bit-iso-download
         if productId == "windows-xp-professional.x86_64.en-US":
@@ -404,21 +404,21 @@ class _WinXP:
 class _Win7:
 
     @staticmethod
-    def get_url(productId):
+    def get_url_and_fn(productId):
         # from https://techpp.com/2018/04/16/windows-7-iso-official-direct-download-links
 
         if productId == "windows-7-home-premium.x86.en-US":
-            return "https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-US.iso"
+            return ("https://download.microsoft.com/download/E/D/A/EDA6B508-7663-4E30-86F9-949932F443D0/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x86FRE_en-US.iso", None)
         if productId == "windows-7-home-premium.x86_64.en-US":
-            return "https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-US.iso"
+            return ("https://download.microsoft.com/download/E/A/8/EA804D86-C3DF-4719-9966-6A66C9306598/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_HOMEPREMIUM_x64FRE_en-US.iso", None)
         if productId == "windows-7-professional.x86.en-US":
-            return "https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-US.iso"
+            return ("https://download.microsoft.com/download/C/0/6/C067D0CD-3785-4727-898E-60DC3120BB14/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x86FRE_en-US.iso", None)
         if productId == "windows-7-professional.x86_64.en-US":
-            return "https://download.microsoft.com/download/0/6/3/06365375-C346-4D65-87C7-EE41F55F736B/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x64FRE_en-US.iso"
+            return ("https://download.microsoft.com/download/0/6/3/06365375-C346-4D65-87C7-EE41F55F736B/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_PROFESSIONAL_x64FRE_en-US.iso", None)
         if productId == "windows-7-ultimate.x86.en-US":
-            return "https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-US.iso"
+            return ("https://download.microsoft.com/download/1/E/6/1E6B4803-DD2A-49DF-8468-69C0E6E36218/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x86FRE_en-US.iso", None)
         if productId == "windows-7-ultimate.x86_64.en-US":
-            return "https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-US.iso"
+            return ("https://download.microsoft.com/download/5/1/9/5195A765-3A41-4A72-87D8-200D897CBE21/7601.24214.180801-1700.win7sp1_ldr_escrow_CLIENT_ULTIMATE_x64FRE_en-US.iso", None)
 
         if productId.startswith("windows-7-enterprise-"):
             if productId == "windows-7-enterprise.x86.en-US":
@@ -437,7 +437,7 @@ class _Win7:
                 button = browser.find_elements_by_xpath("//button[class='od-Button od-ButtonBarCommand od-ButtonBarCommand--button']")[1]
                 button.click()
 
-                return url
+                return (url, productId + ".iso")
             finally:
                 browser.quit()
 
