@@ -23,6 +23,7 @@
 import os
 import time
 import selenium
+from functools import cache
 from ._utils import force_mkdir, force_symlink
 from ._handy import do_fetch
 from ._config import ConfigBase
@@ -31,6 +32,7 @@ from ._errors import ArgumentError
 
 class WindowsDownloader:
 
+    @cache
     @staticmethod
     def get_product_id_list():
         ret = []
