@@ -1,6 +1,7 @@
 #!/bin/bash
 
-FILES=$(find . -name '*.py' | tr '\n' ' ')
+FILES="$(find . -name '*.py' | tr '\n' ' ')"
+FILES="${FILES} $(find ./tools -name '*' | tr '\n' ' ')"
 ERRFLAG=0
 
 OUTPUT=`pyflakes ${FILES} 2>&1`

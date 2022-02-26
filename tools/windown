@@ -12,7 +12,7 @@ import collections
 import shlex
 import sys
 
-import pycdlib
+import windown
 
 
 class PyCdlibCmdLoop(cmd.Cmd):
@@ -509,49 +509,114 @@ class PyCdlibCmdLoop(cmd.Cmd):
 
 
 def usage():
-    print('Usage: %s [options] <product-category> [download-parameters...] <dest-dir>' % (sys.argv[0]))
+    print('Usage: %s <category> [options...] <dest-dir>' % (sys.argv[0]))
     print('')
-    print('Available options:')
-    print('')
-    print('Available values for product-category argument:')
+    print('Available categories:')
     print('  windows')
     print('  office')
     print('')
+    print('Available options:')
+    print('  --force: force overwrite existing files')
+    print('')
     if True:
-        print('Parameters for windows product category:')
+        print('Parameters for "windows" category:')
         print('  --all: download all windows products')
         print('  --product <id>: download a specified windows product, can be specified multiple times')
         print('                  id is formatted as "<edition>.<arch>.<language>')
         print('    available product ids:')
-        for i in WindowsDownloader.get_product_id_list():
+        for i in windown.WindowsDownloader.get_product_id_list():
             print('      %s' % (i))
         print('')
+    if True:
+        print('Parameters for "office" category:')
 
 
-def main():
-    '''
-    The main function.
-    '''
-    if len(sys.argv) != 2:
-        print('Usage: %s <isofile>' % (sys.argv[0]))
-        sys.exit(1)
+def die(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(1)
 
-    iso = pycdlib.PyCdlib()
-    fp = open(sys.argv[1], 'rb')
-    iso.open_fp(fp)
 
-    done = False
-    cmdloop = PyCdlibCmdLoop(iso)
-    while not done:
-        try:
-            cmdloop.cmdloop()
-            done = True
-        except Exception as e:  # pylint: disable=broad-except
-            print(e)
+def downloadWindows(bForce, bCreateSubDir, destDir, bAll, productIdList):
+    if bAll:
+        productIdList = windown.WindowsDownloader.get_product_id_list()
 
-    iso.close()
-    fp.close()
+    obj = windown.WindowsDownloader(windown.EtcDirCfg())
+    for productId in productIdList:
+        obj.download(productId, destDir, bCreateSubDir)
+
+
+def downloadOffice():
+    pass
 
 
 if __name__ == '__main__':
-    main()
+    c = 0
+    category = None
+    destDir = None
+    bForce = False
+    bCreateSubDir = False
+
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(1)
+
+    if sys.argv[1] == "--help":
+        usage()
+        sys.exit(0)
+
+    category = sys.argv[1]
+    if category == "windows":
+        bAll = False
+        productIdList = []
+    elif category == "office":
+        pass
+    else:
+        die('Invalid category.')
+
+    c = 2
+    while len(sys.argv) <= c:
+        if sys.argv[c] == "--force":
+            bForce = True
+            c += 1
+            continue
+
+        if sys.argv[c] == "--create-subdir":
+            bCreateSubDir = True
+            c += 1
+            continue
+
+        if sys.argv[c] == "--all":
+            if len(productIdList) > 0:
+                die("--all and --product are mutally exclusive.")
+            bAll = True
+            c += 1
+            continue
+
+        if sys.argv[c] == "--product":
+            if len(sys.argv) <= c + 1:
+                die('Missing product id.')
+            productId = sys.argv[c + 1]
+            if productId in productIdList:
+                die("Duplicate product id %s specified." % (productId))
+            if productId not in windown.WindowsDownloader.get_product_id_list():
+                die("Invalid product id %s." % (productId))
+            if bAll:
+                die("--all and --product are mutally exclusive.")
+            productIdList.append(productId)
+            c += 2
+            continue
+
+        destDir = sys.argv[c]
+        if len(sys.argv) > c:
+            die("No argument should exists after <dest-dir>.")
+        c += 1
+
+    if destDir is None:
+        die('No destination directory specified.')
+
+    if category == "windows":
+        downloadWindows(bForce, bCreateSubDir, destDir, bAll, productIdList)
+    elif category == "office":
+        downloadOffice()
+    else:
+        assert False
