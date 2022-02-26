@@ -35,7 +35,7 @@ __version__ = "0.0.1"
 from ._config import ConfigBase
 
 from ._dld_windows import WindowsDownloader
-from ._dld_windows import OfficeDownloader
+from ._dld_office import OfficeDownloader
 
 from ._errors import ArgumentError
 from ._errors import ConfigError

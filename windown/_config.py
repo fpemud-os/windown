@@ -26,33 +26,33 @@ from ._errors import ConfigError
 
 class ConfigBase(abc.ABC):
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def quiet(self):
         pass
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def fetch_command(self):
         pass
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def resume_command(self):
         pass
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def fetch_command_quiet(self):
         pass
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def resume_command_quiet(self):
         pass
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def checksum_failure_max_tries(self):
         pass
 
