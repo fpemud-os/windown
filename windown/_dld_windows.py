@@ -285,7 +285,7 @@ class WindowsDownloader:
 
         do_fetch(self._cfg, fullfn, [url], digest=digest, digest_algorithm=digestAlgo)
 
-        if fullfn != (productId + ".iso"):
+        if fn != (productId + ".iso"):
             force_symlink(fullfn, productId + ".iso")
 
 

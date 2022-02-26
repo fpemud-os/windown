@@ -60,9 +60,9 @@ class ConfigBase(abc.ABC):
         def __check(s):
             if not isinstance(s, str):
                 raise ConfigError("")
-            if r"\${FILE}" not in s:
+            if r"${FILE}" not in s:
                 raise ConfigError("")
-            if r"\${URI}" not in s:
+            if r"${URI}" not in s:
                 raise ConfigError("")
 
         if not isinstance(self.quiet, bool):

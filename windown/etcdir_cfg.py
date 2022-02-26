@@ -93,22 +93,22 @@ class Config(ConfigBase):
         else:
             buf = ""
 
-        m = re.search("^%s=\"(.*)\"$" % (varName), buf, re.MULTILINE)
+        m = re.search(r'^%s="(.*)"$' % (varName), buf, re.MULTILINE)
         if m is None:
             return defaultValue
         varVal = m.group(1)
 
-        while True:
-            m = re.search("\\${(\\S+)?}", varVal)
-            if m is None:
-                break
-            varName2 = m.group(1)
-
-            varVal2 = self._getConfVar(self._mainConf, varName2)
-            if varVal2 is None:
-                varVal2 = ""
-
-            varVal = varVal.replace(m.group(0), str(varVal2))
+        # while True:
+        #     m = re.search(r'${(\S+)?}', varVal)
+        #     if m is None:
+        #         break
+        #     varName2 = m.group(1)
+        # 
+        #     varVal2 = self._getConfVar(self._mainConf, varName2)
+        #     if varVal2 is None:
+        #         varVal2 = ""
+        # 
+        #     varVal = varVal.replace(m.group(0), str(varVal2))
 
         if varClass == str:
             return varVal
