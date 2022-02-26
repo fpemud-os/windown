@@ -24,9 +24,9 @@ import os
 import time
 import selenium
 from ._utils import force_mkdir, force_symlink
+from ._handy import do_fetch
 from ._config import ConfigBase
 from ._errors import ArgumentError
-from ._handy import do_fetch
 
 
 class WindowsDownloader:
@@ -171,6 +171,44 @@ class WindowsDownloader:
                 "windows-11.x86_64.tr",                      # language: Turkish
                 "windows-11.x86_64.uk",                      # language: Ukrainian
             ]
+
+        return ret
+
+    @classmethod
+    def get_product_description(cls, product_id):
+        assert product_id in cls.get_product_id_list()
+
+        ret = ""
+        edition, arch, lang = product_id.split(".")
+
+        d = {
+            "windows-98-se":           "Microsoft Windows 98 SE",
+            "windows-98-se-oem":       "Microsoft Windows 98 SE (OEM)",
+            "windows-xp-home":         "Microsoft Windows XP Home",
+            "windows-xp-professional": "Microsoft Windows XP Professional",
+            "windows-7-starter":       "Microsoft Windows 7 Starter",
+            "windows-7-home-basic":    "Microsoft Windows 7 Home Basic",
+            "windows-7-home-premium":  "Microsoft Windows 7 Home Premium",
+            "windows-7-professional":  "Microsoft Windows 7 Professional",
+            "windows-7-ultimate":      "Microsoft Windows 7 Ultimate",
+            "windows-7-enterprise":    "Microsoft Windows 7 Enterprise",
+            "windows-10":              "Microsoft Windows 10",
+            "windows-11":              "Microsoft Windows 11",
+        }
+        ret += d[edition]
+        ret += ", "
+
+        d = {
+            "x86":    "X86",
+            "x86_64": "X86_64",
+        }
+        ret += d[arch]
+        ret += ", "
+
+        if edition in ["windows-10", "windows-11"]:
+            ret += _Win10.langDict[lang]
+        else:
+            ret += lang
 
         return ret
 
