@@ -43,7 +43,7 @@ def usage():
         print('                  id is formatted as "<edition>.<arch>.<language>')
         print('    available product ids:')
         for i in windown.WindowsDownloader.get_product_id_list():
-            print('      %s' % (i))
+            print('      %s: %s' % (i, windown.WindowsDownloader.get_product_description(i)))
         print('')
     if True:
         print('Parameters for "office" category:')
