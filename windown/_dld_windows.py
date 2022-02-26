@@ -273,17 +273,15 @@ class WindowsDownloader:
             os.rmdir(destDir)
 
     def __fetch_install_iso_file_simple(self, productId, url, destDir, fn=None, digest=None):
-        if fn is not None:
-            fullfn = os.path.join(destDir, fn)
-        else:
-            fullfn = os.path.join(destDir, os.path.basename(url))
+        if fn is None:
+            fn = os.path.basename(url)
 
         if digest is not None:
             digestAlgo = "sha256"
         else:
             digestAlgo = None
 
-        do_fetch(self._cfg, fullfn, [url], digest=digest, digest_algorithm=digestAlgo)
+        do_fetch(self._cfg, os.path.join(destDir, fn), [url], digest=digest, digest_algorithm=digestAlgo)
 
         if fn != (productId + ".iso"):
             force_symlink(fn, os.path.join(destDir, productId + ".iso"))
