@@ -42,8 +42,9 @@ def usage():
         print('  --product <id>: download a specified windows product, can be specified multiple times')
         print('                  id is formatted as "<edition>.<arch>.<language>')
         print('    available product ids:')
+        maxLen = max([len(x) for x in windown.WindowsDownloader.get_product_id_list()])
         for i in windown.WindowsDownloader.get_product_id_list():
-            print('      %s: %s' % (i, windown.WindowsDownloader.get_product_description(i)))
+            print('      %s: %s%s' % (i, " " * (maxLen - len(i)), windown.WindowsDownloader.get_product_description(i)))
         print('')
     if True:
         print('Parameters for "office" category:')
