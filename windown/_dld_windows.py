@@ -32,8 +32,8 @@ from ._errors import ArgumentError
 
 class WindowsDownloader:
 
-    @cache
     @staticmethod
+    @cache
     def get_product_id_list():
         ret = []
 
