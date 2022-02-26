@@ -103,11 +103,11 @@ class Config(ConfigBase):
         #     if m is None:
         #         break
         #     varName2 = m.group(1)
-        # 
+        #
         #     varVal2 = self._getConfVar(self._mainConf, varName2)
         #     if varVal2 is None:
         #         varVal2 = ""
-        # 
+        #
         #     varVal = varVal.replace(m.group(0), str(varVal2))
 
         if varClass == str:

@@ -38,8 +38,19 @@ def force_rm(path):
 
 
 def force_mkdir(path):
-    force_rm(path)
-    os.mkdir(path)
+    if os.path.islink(path):
+        os.remove(path)
+        os.mkdir(path)
+    elif os.path.isfile(path):
+        os.remove(path)
+        os.mkdir(path)
+    elif os.path.isdir(path):
+        pass                        # already exists
+    elif os.path.lexists(path):
+        os.remove(path)             # other type of file, such as device node
+        os.mkdir(path)
+    else:
+        os.mkdir(path)              # path does not exist
 
 
 def force_symlink(target, link_path):
