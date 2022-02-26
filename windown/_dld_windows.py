@@ -237,8 +237,9 @@ class WindowsDownloader:
         return os.path.join(dest_dir, product_id + ".iso")
 
     def _download(self, productId, destDir, bCreateProductSubDir):
-        destDir = os.path.join(destDir, productId)
-        force_mkdir(destDir)
+        if bCreateProductSubDir:
+            destDir = os.path.join(destDir, productId)
+            force_mkdir(destDir)
 
         if productId.startswith("windows-98-"):
             url, digest = _Win98.get_url_and_digest(productId)
