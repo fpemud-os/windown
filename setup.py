@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-import os
 import email.utils
 try:
     # First try to load most advanced setuptools setup.
-    from setuptools import setup, find_packages
+    from setuptools import setup
 except BaseException:
     # Fall back if setuptools is not installed.
-    from distutils.core import setup, find_packages
+    from distutils.core import setup
 
 # package metadata
 __package__ = 'windown'
