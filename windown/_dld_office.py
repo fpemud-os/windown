@@ -20,18 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from ._config import ConfigBase, Param
+from ._config import ConfigBase
 
 
 class OfficeDownloader:
 
-    def __init__(self, cfg=None, param=None):
-        if cfg is not None:
-            assert isinstance(cfg, ConfigBase)
-            self._cfg = cfg
-        else:
-            self._cfg = EtcDirConfig()
-
-        assert isinstance(param, Param)
-        assert param.check()
-        self._param = param
+    def __init__(self, cfg):
+        assert isinstance(cfg, ConfigBase)
+        self._cfg = cfg

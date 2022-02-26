@@ -24,8 +24,8 @@ import os
 import time
 import selenium
 from ._utils import force_mkdir, force_symlink
-from ._config import ConfigBase, Param
-from ._errors import ArgumentError, FetchError
+from ._config import ConfigBase
+from ._errors import ArgumentError
 from ._handy import do_fetch
 
 
@@ -186,9 +186,6 @@ class WindowsDownloader:
         if len(os.listdir(dest_dir)) > 0:
             print("WARNING: destination directory is not empty, files may be overwrited.")
 
-        if create_product_subdir:
-            dest_dir = os.path.join(dest_dir, product_id)
-        force_mkdir(dest_dir)
         self._download(product_id, dest_dir, create_product_subdir)
 
     def get_product_subdir(self, dest_dir, product_id):
@@ -199,10 +196,18 @@ class WindowsDownloader:
         assert product_id in self.get_product_id_list()
         return os.path.join(dest_dir, product_id + ".iso")
 
-    def _download(self, productId, destDir, bDeleteWhenNotSupport):
+    def _download(self, productId, destDir, bCreateProductSubDir):
+        destDir = os.path.join(destDir, productId)
+        force_mkdir(destDir)
+
         if productId.startswith("windows-98-"):
             url, digest = _Win98.get_url_and_digest(productId)
             self.__fetch_install_iso_file_simple(productId, url, destDir)
+            return
+
+        if productId.startswith("windows-xp-"):
+            url = _WinXP.get_url(productId)
+            self.__fetch_install_iso_file_simple(productId, url, destDir, digest=digest)
             return
 
         if productId.startswith("windows-7-"):
@@ -223,7 +228,7 @@ class WindowsDownloader:
             return
 
         print("WARNING: product-id %s not supported." % (productId))
-        if bDeleteWhenNotSupport:
+        if bCreateProductSubDir:
             os.rmdir(destDir)
 
     def __fetch_install_iso_file_simple(self, productId, url, destDir, fn=None, digest=None):
@@ -236,7 +241,7 @@ class WindowsDownloader:
             digestAlgo = "sha256"
         else:
             digestAlgo = None
-        
+
         do_fetch(self._cfg, fullfn, [url], digest=digest, digest_algorithm=digestAlgo)
 
         if fullfn != (productId + ".iso"):
@@ -344,7 +349,15 @@ class _WinXP:
 
     @staticmethod
     def get_url(productId):
-        pass
+        # from https://windowslay.com/windows-xp-sp3-iso-download/
+        if productId == "windows-xp-home.x86.en-US":
+            return "https://files.windowslay.com/en_windows_xp_professional_sp3_Nov_2013_Incl_SATA_Drivers.iso?_gl=1*1mgf9k5*_ga*NDQwNzA4Mzk1LjE2NDU4NDAyNzQ.*_ga_Z8ZFNPE9ZJ*MTY0NTg0MDI2NS4xLjEuMTY0NTg0MDQ4NS4w&_ga=2.40777185.291888328.1645840274-440708395.1645840274"
+
+        # from https://windowslay.com/windows-xp-professional-64-bit-iso-download
+        if productId == "windows-xp-professional.x86.en-US":
+            return "https://files.windowslay.com/en_windows_xp_professional_64-bit_dvd.iso?_gl=1*1qg4di5*_ga*NDQwNzA4Mzk1LjE2NDU4NDAyNzQ.*_ga_Z8ZFNPE9ZJ*MTY0NTg0MDI2NS4xLjEuMTY0NTg0MDMyMC4w&_ga=2.235393346.291888328.1645840274-440708395.1645840274"
+
+        assert False
 
 
 class _Win7:

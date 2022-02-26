@@ -5,7 +5,7 @@ import email.utils
 try:
     # First try to load most advanced setuptools setup.
     from setuptools import setup, find_packages
-except:
+except BaseException:
     # Fall back if setuptools is not installed.
     from distutils.core import setup, find_packages
 
@@ -25,20 +25,19 @@ setup(
     license='GNU General Public License (GPL)',
     platforms=['Linux'],
     classifiers=[
-        'Development Status :: 5 - Production/Stable',                                                                                                                                       
+        'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Intended Audience :: Developers',                                                                                                                                                   
-        'Natural Language :: English',                                                                                                                                                       
-        'Operating System :: POSIX :: Linux',                                                                                                                                                
-        'Programming Language :: Python',                                                                                                                                                    
-        'Programming Language :: Python :: 3',                                                                                                                                               
-        'Topic :: Software Development :: Libraries :: Python Modules',                                                                                                                      
-        ],                                                                                                                                                                                   
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
     packages=['windown'],
     data_files=[('share/man/man1', ['man/windown.1'])],
     scripts=['tools/windown'],
 )
-
 
 
 # import io

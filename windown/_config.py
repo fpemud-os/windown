@@ -57,24 +57,24 @@ class ConfigBase(abc.ABC):
         pass
 
     def check(self):
-        if "\${FILE}" not in self.fetch_command:
+        if r"\${FILE}" not in self.fetch_command:
             raise ConfigError("")
-        if "\${URI}" not in self.fetch_command:
-            raise ConfigError("")
-
-        if "\${FILE}" not in self.fetch_command_quiet:
-            raise ConfigError("")
-        if "\${URI}" not in self.fetch_command_quiet:
+        if r"\${URI}" not in self.fetch_command:
             raise ConfigError("")
 
-        if "\${FILE}" not in self.resume_command:
+        if r"\${FILE}" not in self.fetch_command_quiet:
             raise ConfigError("")
-        if "\${URI}" not in self.resume_command:
+        if r"\${URI}" not in self.fetch_command_quiet:
             raise ConfigError("")
 
-        if "\${FILE}" not in self.resume_command_quiet:
+        if r"\${FILE}" not in self.resume_command:
             raise ConfigError("")
-        if "\${URI}" not in self.resume_command_quiet:
+        if r"\${URI}" not in self.resume_command:
+            raise ConfigError("")
+
+        if r"\${FILE}" not in self.resume_command_quiet:
+            raise ConfigError("")
+        if r"\${URI}" not in self.resume_command_quiet:
             raise ConfigError("")
 
         if not isinstance(self.checksum_failure_max_tries, int):

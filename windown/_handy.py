@@ -85,7 +85,7 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
         # verify digest
         if digest and not _verify(filepath, digest, digest_algorithm):
             os.rename(filepath, filepath + ".verify_failed")
-            if checksum_failure_tries < self._cfg.checksum_failure_max_tries:
+            if checksum_failure_tries < cfg.checksum_failure_max_tries:
                 if not cfg.quiet:
                     print(">>> Verify failed! Refetching...")
                 checksum_failure_tries += 1

@@ -36,6 +36,7 @@ def force_rm(path):
     else:
         pass                        # path does not exist, do nothing
 
+
 def force_mkdir(path):
     force_rm(path)
     os.mkdir(path)
