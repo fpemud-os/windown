@@ -207,11 +207,11 @@ class WindowsDownloader:
 
         if productId.startswith("windows-xp-"):
             url = _WinXP.get_url(productId)
-            self.__fetch_install_iso_file_simple(productId, url, destDir, digest=digest)
+            self.__fetch_install_iso_file_simple(productId, url, destDir, fn=(productId + ".iso"))
             return
 
         if productId.startswith("windows-7-"):
-            url, digest = _Win7.get_url(productId)
+            url = _Win7.get_url(productId)
             self.__fetch_install_iso_file_simple(productId, url, destDir)
             return
 
@@ -350,11 +350,11 @@ class _WinXP:
     @staticmethod
     def get_url(productId):
         # from https://windowslay.com/windows-xp-sp3-iso-download/
-        if productId == "windows-xp-home.x86.en-US":
+        if productId == "windows-xp-professional.x86_64.en-US":
             return "https://files.windowslay.com/en_windows_xp_professional_sp3_Nov_2013_Incl_SATA_Drivers.iso?_gl=1*1mgf9k5*_ga*NDQwNzA4Mzk1LjE2NDU4NDAyNzQ.*_ga_Z8ZFNPE9ZJ*MTY0NTg0MDI2NS4xLjEuMTY0NTg0MDQ4NS4w&_ga=2.40777185.291888328.1645840274-440708395.1645840274"
 
         # from https://windowslay.com/windows-xp-professional-64-bit-iso-download
-        if productId == "windows-xp-professional.x86.en-US":
+        if productId == "windows-xp-professional.x86_64.en-US":
             return "https://files.windowslay.com/en_windows_xp_professional_64-bit_dvd.iso?_gl=1*1qg4di5*_ga*NDQwNzA4Mzk1LjE2NDU4NDAyNzQ.*_ga_Z8ZFNPE9ZJ*MTY0NTg0MDI2NS4xLjEuMTY0NTg0MDMyMC4w&_ga=2.235393346.291888328.1645840274-440708395.1645840274"
 
         assert False
