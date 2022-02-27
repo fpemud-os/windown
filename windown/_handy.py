@@ -39,7 +39,7 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
     @type digest: str
     @param digest_algorithm: digest algorithm of the digest.
     @type digest_algorithm: str
-    @param digest_filepath: digest filepath.
+    @param digest_filepath: digest filepath, default: filepath + ".hash".
     @type digest_filepath: str
     @param force: Force download, even when a file already exists. This is
         most useful when there are no digests available, since otherwise
@@ -51,56 +51,66 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
     """
 
     assert len(myuris) >= 1
-    assert not (force and digest)                   # since the force parameter can trigger unnecessary fetch when the digests match, do not allow force=True when digests are provided
+    assert not (digest and force)                   # since the force parameter can trigger unnecessary fetch when the digests match, do not allow force=True when digests are provided
     assert (digest and digest_algorithm) or (not digest and not digest_algorithm)
-    assert not (not digest and digest_filepath)
+
+    if digest is None:
+        digest = ""
+    if digest_filepath is None:
+        digest_filepath = filepath + ".hash"
 
     checksum_failure_tries = 0
-    bFetch = None
+    fetch = 0                   # 0: unknown, 1: fetch; 2: resume, 3: finished
     while True:
         # determine fetch or resume
         if force:
-            bFetch = True
+            fetch = 1
         elif os.path.exists(filepath):
-            if digest and _verify(filepath, digest, digest_algorithm):
+            fetch = 2
+            if digest != "":
+                if _verify(filepath, digest, digest_algorithm):
+                    fetch = 3
+            else:
+                if os.path.exists(digest_filepath):
+                    fetch = 3
+            if fetch == 3:
                 if not cfg.quiet:
                     print(">>> Already fetched...")
                 return
             else:
                 if not cfg.quiet:
                     print(">>> Resuming fetching...")
-                bFetch = False
         else:
-            bFetch = True
+            fetch = 1
 
-        # exec command
-        if bFetch:
+        # run command
+        if fetch == 1:
             cmd = cfg.fetch_command if not cfg.quiet else cfg.fetch_command_quiet
-        else:
+        elif fetch == 2:
             cmd = cfg.resume_command if not cfg.quiet else cfg.resume_command_quiet
+        else:
+            assert False
         cmd = cmd.replace(r'\"', r'"')                  # FIXME
         cmd = cmd.replace(r"${FILE}", filepath)
         cmd = cmd.replace(r"${URI}", myuris[0])
         subprocess.check_call(cmd, shell=True, universal_newlines=True)
 
         # verify digest
-        if digest and not _verify(filepath, digest, digest_algorithm):
-            os.rename(filepath, filepath + ".verify_failed")
-            if checksum_failure_tries < cfg.checksum_failure_max_tries:
-                if not cfg.quiet:
-                    print(">>> Verify failed! Refetching...")
-                checksum_failure_tries += 1
-                continue
-            else:
-                print(">>> Verify failed!")
-                return
+        if digest != "":
+            if not _verify(filepath, digest, digest_algorithm):
+                os.rename(filepath, filepath + ".verify_failed")
+                if checksum_failure_tries < cfg.checksum_failure_max_tries:
+                    if not cfg.quiet:
+                        print(">>> Verify failed! Refetching...")
+                    checksum_failure_tries += 1
+                    continue
+                else:
+                    print(">>> Verify failed!")
+                    return
 
         # record digest
-        if digest:
-            if not digest_filepath:
-                digest_filepath = filepath + ".digest"
-            with open(digest_filepath, "w") as f:
-                f.write(digest)
+        with open(digest_filepath, "w") as f:
+            f.write(digest)
 
         # finished, we must jump out of the loop
         return
