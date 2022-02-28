@@ -23,9 +23,10 @@
 import os
 import hashlib
 import subprocess
+from ._utils import force_rm
 
 
-def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_filepath=None, force=False):
+def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, force=False):
     """
     Fetch files to dstdir and also verify digest if they are available.
 
@@ -39,8 +40,6 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
     @type digest: str
     @param digest_algorithm: digest algorithm of the digest.
     @type digest_algorithm: str
-    @param digest_filepath: digest filepath, default: filepath + ".hash".
-    @type digest_filepath: str
     @param force: Force download, even when a file already exists. This is
         most useful when there are no digests available, since otherwise
         download will be automatically forced if the existing file does not
@@ -56,32 +55,45 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
 
     if digest is None:
         digest = ""
-    if digest_filepath is None:
-        digest_filepath = filepath + ".hash"
+    tempPath = filepath + ".__download__"
+    vfailPath = filepath + ".verify_failed"
 
     checksum_failure_tries = 0
-    fetch = 0                   # 0: unknown, 1: fetch; 2: resume, 3: finished
+    fetch = 0                   # 0: unknown, 1: fetch; 2: resume, 3: finished, 4: re-fetch
     while True:
         # determine fetch or resume
         if force:
             fetch = 1
         elif os.path.exists(filepath):
-            fetch = 2
             if digest != "":
                 if _verify(filepath, digest, digest_algorithm):
                     fetch = 3
+                else:
+                    fetch = 4
             else:
-                if os.path.exists(digest_filepath):
-                    fetch = 3
-            if fetch == 3:
-                if not cfg.quiet:
-                    print(">>> Already fetched...")
-                return
-            else:
-                if not cfg.quiet:
-                    print(">>> Resuming fetching...")
+                fetch = 3
+        elif os.path.exists(tempPath):
+            fetch = 2
         else:
             fetch = 1
+
+        # print message
+        if fetch == 1:
+            pass
+        elif fetch == 2:
+            if not cfg.quiet:
+                print(">>> Resuming fetching...")
+        elif fetch == 3:
+            if not cfg.quiet:
+                print(">>> Already fetched...")
+        elif fetch == 4:
+            if not cfg.quiet:
+                print(">>> Verify failed! Refetching...")
+            os.rename(filepath, vfailPath)
+            force_rm(filepath)
+            force_rm(tempPath)
+        else:
+            assert False
 
         # run command
         if fetch == 1:
@@ -91,14 +103,14 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
         else:
             assert False
         cmd = cmd.replace(r'\"', r'"')                  # FIXME
-        cmd = cmd.replace(r"${FILE}", filepath)
+        cmd = cmd.replace(r"${FILE}", tempPath)
         cmd = cmd.replace(r"${URI}", myuris[0])
         subprocess.check_call(cmd, shell=True, universal_newlines=True)
 
         # verify digest
         if digest != "":
-            if not _verify(filepath, digest, digest_algorithm):
-                os.rename(filepath, filepath + ".verify_failed")
+            if not _verify(tempPath, digest, digest_algorithm):
+                os.rename(tempPath, vfailPath)
                 if checksum_failure_tries < cfg.checksum_failure_max_tries:
                     if not cfg.quiet:
                         print(">>> Verify failed! Refetching...")
@@ -108,11 +120,8 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, digest_f
                     print(">>> Verify failed!")
                     return
 
-        # record digest
-        with open(digest_filepath, "w") as f:
-            f.write(digest)
-
         # finished, we must jump out of the loop
+        os.rename(tempPath, filepath)
         return
 
 
