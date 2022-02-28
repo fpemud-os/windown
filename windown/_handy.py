@@ -55,7 +55,7 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, force=Fa
 
     if digest is None:
         digest = ""
-    tempPath = filepath + ".__download__"
+    tempPath = filepath + ".tmp"
     vfailPath = filepath + ".verify_failed"
 
     checksum_failure_tries = 0
@@ -85,7 +85,8 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, force=Fa
                 print(">>> Resuming fetching...")
         elif fetch == 3:
             if not cfg.quiet:
-                print(">>> Already fetched...")
+                print(">>> Already fetched.")
+            return
         elif fetch == 4:
             if not cfg.quiet:
                 print(">>> Verify failed! Refetching...")
@@ -96,7 +97,7 @@ def do_fetch(cfg, filepath, myuris, digest=None, digest_algorithm=None, force=Fa
             assert False
 
         # run command
-        if fetch == 1:
+        if fetch == 1 or fetch == 4:
             cmd = cfg.fetch_command if not cfg.quiet else cfg.fetch_command_quiet
         elif fetch == 2:
             cmd = cfg.resume_command if not cfg.quiet else cfg.resume_command_quiet
