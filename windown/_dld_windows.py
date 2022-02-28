@@ -268,9 +268,7 @@ class WindowsDownloader:
             self.__fetch_install_iso_file_simple(productId, url, destDir, fn=(productId + ".iso"), digest=digest)
             return
 
-        print("WARNING: product-id %s not supported." % (productId))
-        if bCreateProductSubDir:
-            os.rmdir(destDir)
+        assert False
 
     def __fetch_install_iso_file_simple(self, productId, url, destDir, fn=None, digest=None):
         if fn is None:
