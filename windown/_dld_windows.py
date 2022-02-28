@@ -224,7 +224,8 @@ class WindowsDownloader:
         if not os.path.isdir(dest_dir):
             raise ArgumentError("invalid destination directory %s" % (dest_dir))
         if len(os.listdir(dest_dir)) > 0:
-            print("WARNING: destination directory is not empty, files may be overwrited.")
+            if not self._cfg.quiet:
+                print("WARNING: destination directory is not empty, files may be overwrited.")
 
         self._download(product_id, dest_dir, create_product_subdir)
 
