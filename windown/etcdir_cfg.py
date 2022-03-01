@@ -25,6 +25,7 @@ import re
 import pathlib
 from ._config import ConfigBase
 from ._errors import ConfigError
+from .simple_cfg import SimpleConfig
 
 
 class Config(ConfigBase):
@@ -36,23 +37,13 @@ class Config(ConfigBase):
 
         self._mainConf = os.path.join(cfgdir, "windown.conf")
 
-        defaultValue = False
-        self._quiet = self._getConfVar("QUIET", bool, defaultValue)
-
-        defaultValue = r'wget -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
-        self._downCmd = self._getConfVar("FETCH_COMMAND", str, defaultValue)
-
-        defaultValue = r'wget -c -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
-        self._resumeCmd = self._getConfVar("RESUME_COMMAND", str, defaultValue)
-
-        defaultValue = r'wget -q -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
-        self._downQuietCmd = self._getConfVar("FETCH_COMMAND_QUIET", str, defaultValue)
-
-        defaultValue = r'wget -q -c -t 3 -T 60 --passive-ftp -O \"${FILE}\" \"${URI}\"'
-        self._resumeQuietCmd = self._getConfVar("RESUME_COMMAND_QUIET", str, defaultValue)
-
-        defaultValue = 5
-        self._checksumMasTries = self._getConfVar("CHECKSUM_FAILURE_MAX_TRIES", int, defaultValue)
+        defaultValue = SimpleConfig()
+        self._quiet = self._getConfVar("QUIET", bool, defaultValue.quiet)
+        self._downCmd = self._getConfVar("FETCH_COMMAND", str, defaultValue.fetch_command)
+        self._resumeCmd = self._getConfVar("RESUME_COMMAND", str, defaultValue.resume_command)
+        self._downQuietCmd = self._getConfVar("FETCH_COMMAND_QUIET", str, defaultValue.fetch_command_quiet)
+        self._resumeQuietCmd = self._getConfVar("RESUME_COMMAND_QUIET", str, defaultValue.resume_command_quiet)
+        self._checksumMasTries = self._getConfVar("CHECKSUM_FAILURE_MAX_TRIES", int, defaultValue.checksum_failure_max_tries)
 
         self.check()
 
