@@ -62,31 +62,31 @@ class Config(ConfigBase):
         return self._checksumMasTries
 
     @quiet.setter
-    def set_quiet(self, value):
+    def quiet(self, value):
         self._quiet = value
         self.check()
 
     @fetch_command.setter
-    def set_fetch_command(self, value):
+    def fetch_command(self, value):
         self._downCmd = value
         self.check()
 
     @resume_command.setter
-    def set_resume_command(self, value):
+    def resume_command(self, value):
         self._resumeCmd = value
         self.check()
 
     @fetch_command_quiet.setter
-    def set_fetch_command_quiet(self, value):
+    def fetch_command_quiet(self, value):
         self._downQuietCmd = value
         self.check()
 
     @resume_command_quiet.setter
-    def set_resume_command_quiet(self, value):
+    def resume_command_quiet(self, value):
         self._resumeQuietCmd = value
         self.check()
 
     @checksum_failure_max_tries.setter
-    def set_checksum_failure_max_tries(self, value):
+    def checksum_failure_max_tries(self, value):
         self._checksumMasTries = value
         self.check()
