@@ -25,7 +25,7 @@ import re
 import pathlib
 from ._config import ConfigBase
 from ._errors import ConfigError
-from .simple_cfg import SimpleConfig
+from .simple_cfg import Config as DefaultConfig
 
 
 class Config(ConfigBase):
@@ -37,7 +37,7 @@ class Config(ConfigBase):
 
         self._mainConf = os.path.join(cfgdir, "windown.conf")
 
-        defaultValue = SimpleConfig()
+        defaultValue = DefaultConfig()
         self._quiet = self._getConfVar("QUIET", bool, defaultValue.quiet)
         self._downCmd = self._getConfVar("FETCH_COMMAND", str, defaultValue.fetch_command)
         self._resumeCmd = self._getConfVar("RESUME_COMMAND", str, defaultValue.resume_command)
